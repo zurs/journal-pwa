@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PHPOnCouch\CouchClient;
+
 class Welcome extends CI_Controller {
 
 	/**
