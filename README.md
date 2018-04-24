@@ -29,3 +29,5 @@ Backenden kan man köra med MAMP genom att göra symlinks från repositoriet til
 `/stack1/backend/` => `Application/MAMP/htdocs/stack1/`
 
 `/stack2/backend/` => `Application/MAMP/htdocs/stack2/`
+
+Composer är också nödvändigt då PHP-on-Couch används hittills och det installeras med Composer.
