@@ -24,7 +24,7 @@ class Account_controller extends CI_Controller{
 			$this->jsonresponse->Ok();
 		}
 		else {
-			exit($this->jsonresponse->Error("oops"));
+			exit($this->jsonresponse->Error("Wrong Login"));
 		}
 	}
 
