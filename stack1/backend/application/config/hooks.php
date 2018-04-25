@@ -21,8 +21,8 @@ $hook['post_controller_constructor'] = function()
 			$data = json_decode($ci->input->raw_input_stream);
 			if($data !== null) {
 				$fields = get_object_vars($data);
-				foreach($fields as $field => $key) {
-					$_POST[$field] = $data->$field;
+				foreach($fields as $field => $value) {
+					$_POST[$field] = $value;
 				}
 			}
 		}
