@@ -1,0 +1,14 @@
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="username_login_input">Användarnamn: </label>
+      <input type="text" name="username" id="username_login_input" class="form-control" [(ngModel)]="username">
+    </div>
+    <div class="form-group">
+      <label for="password_login_input">Lösenord: </label>
+      <input type="password" name="password" id="password_login_input" class="form-control" [(ngModel)]="password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Logga in</button>
+  </form>
+
