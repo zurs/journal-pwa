@@ -59,7 +59,6 @@ class Account_model extends CI_Model{
 
 		$docs = $client->limit(1)->find($selector);
 
-
 		$result = null;
 		if(count($docs) === 1) {
 			$accountDoc = reset($docs);

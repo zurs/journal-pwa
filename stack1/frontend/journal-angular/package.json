@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "pwa" : "ng build --prod && cd dist && http-server -p 8080",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
