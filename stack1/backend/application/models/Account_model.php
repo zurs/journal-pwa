@@ -28,11 +28,19 @@ class Account_model extends CI_Model{
 			$client->createDatabase();
 		}
 
-		$accountDoc = new CouchDocument($client);
+		$response = null;
+		try {
+			$response = $client->storeDoc(Account::parseToDocument($account));
+		} catch(Exception $e) {
+			$response = null;
+		}
 
-		$accountDoc->set(Account::parseToArray($account));
-
-		$account->id = $accountDoc->id();
+		if($response !== null) {
+			$account->id = $response->id;
+		}
+		else {
+			$account = null;
+		}
 
 		return $account;
 
@@ -42,10 +50,31 @@ class Account_model extends CI_Model{
 
 	}
 
-	public function get(){
+	public function getByUsername($username){
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+		$selector = ['username' => $username];
 
+		$docs = $client->limit(1)->find($selector);
+
+
+		$result = null;
+		if(count($docs) === 1) {
+			$accountDoc = reset($docs);
+			$result = Account::parseFromDocument($accountDoc);
+		}
+		return $result;
 	}
 
+	public function isAuthenticated(Account $account, Account $dbAccount) : bool {
+		$result = false;
+		if($account->username === $dbAccount->username) {
+			$result = password_verify($account->password, $dbAccount->password);
+		}
+		return $result;
+	}
 
 
 }
@@ -67,20 +96,25 @@ class Account {
 	 */
 	public $password;
 
-	public static function parseToArray(Account $account, $includeID = false) : array {
-		$parsedAccount = (array) $account;
-		if(!$includeID) {
-			unset($parsedAccount['id']);
+	public static function parseToDocument(Account $account, $includeID = false) : stdClass {
+		$parsedAccount = new stdClass();
+		$parsedAccount->username = $account->username;
+		$parsedAccount->password = $account->password;
+
+		if($includeID) {
+			$parsedAccount->id = $account->id;
 		}
 
 		return $parsedAccount;
 	}
 
-	public static function parseFromDocument(CouchDocument $document) : Account {
+	public static function parseFromDocument(stdClass $document) : Account {
 		$account = new Account();
 		$account->username = $document->username;
 		$account->password = $document->password;
-		$account->id = $document->id();
+		$account->id = $document->_id;
+
+		return $account;
 	}
 
 }
