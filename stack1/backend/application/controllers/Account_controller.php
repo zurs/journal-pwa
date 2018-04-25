@@ -21,10 +21,10 @@ class Account_controller extends CI_Controller{
 		$dbAccount = $this->account_model->getByUsername($account->username);
 
 		if($dbAccount !== null && $this->account_model->isAuthenticated($account, $dbAccount)) {
-			exit(json_encode(['ok']));
+			$this->jsonresponse->Ok();
 		}
 		else {
-			exit(json_encode(['error' => 'login error']));
+			exit($this->jsonresponse->Error("oops"));
 		}
 	}
 
@@ -37,9 +37,9 @@ class Account_controller extends CI_Controller{
 		$account = $this->account_model->create($account);
 
 		if($account !== null){
-			exit(json_encode($account));
+			$this->jsonresponse->Ok($account);
 		} else {
-			exit(json_encode(['error' => 'Wrong stiuff']));
+			$this->jsonresponse->Error("Could not create");
 		}
 
 	}
