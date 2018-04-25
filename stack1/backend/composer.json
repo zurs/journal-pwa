@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=7.1.0",
-		"php-on-couch/php-on-couch": "^2.0"
+		"php-on-couch/php-on-couch": "^2.0",
+		"ramsey/uuid": "^3.7"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
