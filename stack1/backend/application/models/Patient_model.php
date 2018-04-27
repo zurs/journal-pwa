@@ -32,6 +32,45 @@ class Patient_model extends CI_Model {
 
 		return $patient;
 	}
+
+	public function getById(string $id) {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_patients');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		try {
+			$doc = $client->getDoc($id);
+		}
+		catch(Exception $e) {
+			$doc = null;
+		}
+
+		$result = null;
+		if($doc !== null) {
+			$result = Patient::parseFromDocument($doc);
+		}
+		return $result;
+	}
+
+	public function getAll() : array {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_patients');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		$client->include_docs(true);
+		$docs = $client->getAllDocs();
+
+		$result = [];
+		if($docs->total_rows > 0) {
+			foreach($docs->rows as $row) {
+				$result[] = Patient::parseFromDocument($row->doc);
+			}
+		}
+
+		return $result;
+	}
 }
 
 

@@ -28,8 +28,17 @@ class Patient_controller extends CI_Controller {
 		$this->jsonresponse->Ok($result);
 	}
 
-	public function get($id){
+	public function get($id) {
+		$patient = $this->patient_model->getById($id);
+		if($patient === null)
+			$this->jsonresponse->Error("", 404);
+		else
+			$this->jsonresponse->Ok($patient);
+	}
 
+	public function getAll() {
+		$patients = $this->patient_model->getAll();
+		$this->jsonresponse->Ok($patients);
 	}
 
 }
