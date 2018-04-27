@@ -7,9 +7,8 @@
  */
 
 use PHPOnCouch\CouchClient;
-use PHPOnCouch\CouchDocument;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+
 
 class Account_model extends CI_Model{
 
@@ -86,7 +85,7 @@ class Account_model extends CI_Model{
 		return $result;
 	}
 
-	public function authenticate(Account $account, Account $dbAccount) : string {
+	public function authenticate(Account $account, Account $dbAccount) {
 		if($account->username === $dbAccount->username) {
 			$isAuth = password_verify($account->password, $dbAccount->password);
 
@@ -104,11 +103,7 @@ class Account_model extends CI_Model{
 }
 
 class Account {
-	/*
-	 * @var string
-	 */
-	public $id;
-
+	use \CouchHelper\ParsableToCouch;
 	/*
 	 * @var string
 	 */
@@ -124,34 +119,12 @@ class Account {
 	 */
 	public $apiKey;
 
-	/*
-	 * @var string
-	 */
-	public $rev;
-
 	public static function parseToDocument(Account $account, $update = false) : stdClass {
-		$parsedAccount = new stdClass();
-		$parsedAccount->username 	= $account->username;
-		$parsedAccount->password 	= $account->password;
-		$parsedAccount->apiKey		= $account->apiKey;
-
-		if($update) {
-			$parsedAccount->_id 	= $account->id;
-			$parsedAccount->_rev 	= $account->rev;
-		}
-
-		return $parsedAccount;
+		return CouchHelper\parseToDocument($account, $update);
 	}
 
 	public static function parseFromDocument(stdClass $document) : Account {
-		$account = new Account();
-		$account->username 	= $document->username;
-		$account->password 	= $document->password;
-		$account->apiKey	= $document->apiKey;
-		$account->id 		= $document->_id;
-		$account->rev		= $document->_rev;
-
-		return $account;
+		return CouchHelper\parseFromDocument($document, Account::class);
 	}
 
 }
