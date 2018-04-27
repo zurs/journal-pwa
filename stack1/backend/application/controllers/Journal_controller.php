@@ -43,5 +43,4 @@ class Journal_controller extends CI_Controller {
 
 		$this->jsonresponse->Ok($returnJournal);
 	}
-
 }

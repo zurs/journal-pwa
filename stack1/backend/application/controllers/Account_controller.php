@@ -17,8 +17,6 @@ class Account_controller extends CI_Controller{
 		$account->password = $this->input->post('password');
 		$dbAccount = $this->account_model->getByUsername($account->username);
 
-
-
 		if($dbAccount !== null) {
 			$apiKey = $this->account_model->authenticate($account, $dbAccount);
 

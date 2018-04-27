@@ -56,8 +56,10 @@ $route['translate_uri_dashes']  = FALSE;
 $route['account/login']['post']  	= 'account_controller/login';
 $route['account']['post']       	= 'account_controller/create';
 
-$route['journal']['post'] = 'journal_controller/create';
+$route['journal']['post'] 		= 'journal_controller/create';
+$route['journal/(:any)']['get']	= 'journal_controller/get/$1';
 
-$route['patient']['post'] 			= 'patient_controller/create';
-$route['patient/(:any)']['get']		= 'patient_controller/get/$1';
-$route['patient']['get']			= 'patient_controller/getAll';
+$route['patient']['post'] 					= 'patient_controller/create';
+$route['patient/(:any)']['get']				= 'patient_controller/get/$1';
+$route['patient']['get']					= 'patient_controller/getAll';
+$route['patient/(:any)/journals']['get']	= 'patient_controller/getJournals/$1';
