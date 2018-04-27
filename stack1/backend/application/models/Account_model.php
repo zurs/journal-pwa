@@ -46,33 +46,18 @@ class Account_model extends CI_Model{
 	}
 
 	public function update(Account $account) : bool {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
+		$client = $this->couch_client->getMasterClient('test1');
 
-		$response = null;
-		try {
-			$accountDoc = Account::parseToDocument($account, true);
-			$response = $client->storeDoc($accountDoc);
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$account->rev = $response->rev;
+		if($this->couch_client->upsert($account, $client) !== null){
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public function getByUsername($username) {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()){
-			$client->createDatabase();
-		}
+		$client = $this->couch_client->getMasterClient('test1');
+
 		$selector = ['username' => $username];
 
 		$docs = $client->limit(1)->find($selector);

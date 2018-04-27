@@ -9,11 +9,13 @@
 use PHPOnCouch\CouchClient;
 class Journal_model extends CI_Model {
 
+	function __construct(){
+		parent::__construct();
+		$this->load->library('couch_client');
+	}
+
 	public function create(Journal $journal): Journal {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
+		$client = $this->couch_client->getMasterDatabaseClient('test1_journals');
 
 		$journal->submittedAt = date('Y-m-d H:i:s');
 
@@ -32,7 +34,6 @@ class Journal_model extends CI_Model {
 		}
 
 		return $journal;
-
 	}
 }
 
