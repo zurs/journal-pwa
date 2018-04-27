@@ -57,3 +57,5 @@ $route['account/login']['post']  = 'account_controller/login';
 $route['account']['post']       = 'account_controller/create';
 
 $route['journal']['post'] = 'journal_controller/create';
+
+$route['patient']['post'] = 'patient_controller/create';
