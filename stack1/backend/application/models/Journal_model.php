@@ -15,7 +15,7 @@ class Journal_model extends CI_Model {
 			$client->createDatabase();
 		}
 
-		$journal->submittedAt = date('Y-m-d H:i:s');
+		$journal->submittedAt = time();
 
 		$response = null;
 		try {

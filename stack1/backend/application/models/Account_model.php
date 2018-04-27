@@ -100,6 +100,9 @@ class Account_model extends CI_Model{
 	}
 
 	public function getByApiKey($apiKey){
+		if($apiKey === null)
+			return null;
+
 		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
 		if(!$client->databaseExists()){
 			$client->createDatabase();
