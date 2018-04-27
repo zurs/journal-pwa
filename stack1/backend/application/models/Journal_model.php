@@ -37,8 +37,7 @@ class Journal_model extends CI_Model {
 class Journal {
 	use \CouchHelper\ParsableToCouch;
 
-	public $name;
-	public $ssn;
+	public $patient;
 	public $text;
 	public $author;
 	public $writtenAt;

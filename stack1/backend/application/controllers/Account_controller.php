@@ -43,11 +43,4 @@ class Account_controller extends CI_Controller{
 			$this->jsonresponse->Error("Could not create");
 		}
 	}
-	public function update() {
-	}
-	public function delete() {
-	}
-
-	public function get() {
-	}
 }
