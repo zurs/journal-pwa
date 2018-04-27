@@ -47,6 +47,10 @@ namespace CouchHelper {
 			if(isset($document->$field))
 				$object->$field = $document->$field;
 		}
+
+		$object->rev = $document->_rev;
+		$object->id = $document->_id;
+
 		return $object;
 	}
 

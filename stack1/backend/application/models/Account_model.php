@@ -53,9 +53,9 @@ class Account_model extends CI_Model{
 
 		$response = null;
 		try {
-			$response = $client->storeDoc(Account::parseToDocument($account, true));
+			$accountDoc = Account::parseToDocument($account, true);
+			$response = $client->storeDoc($accountDoc);
 		} catch(Exception $e) {
-
 			$response = null;
 		}
 
@@ -97,6 +97,23 @@ class Account_model extends CI_Model{
 		}
 
 		return null;
+	}
+
+	public function getByApiKey($apiKey){
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+		$selector = ['apiKey' => $apiKey];
+
+		$docs = $client->limit(1)->find($selector);
+
+		$result = null;
+		if(count($docs) === 1) {
+			$accountDoc = reset($docs);
+			$result = Account::parseFromDocument($accountDoc);
+		}
+		return $result;
 	}
 
 

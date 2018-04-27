@@ -15,6 +15,8 @@ class Journal_model extends CI_Model {
 			$client->createDatabase();
 		}
 
+		$journal->submittedAt = date('Y-m-d H:i:s');
+
 		$response = null;
 		try {
 			$response = $client->storeDoc(Journal::parseToDocument($journal));
@@ -26,7 +28,7 @@ class Journal_model extends CI_Model {
 			$journal->id = $response->id;
 		}
 		else {
-			$journal= null;
+			$journal = null;
 		}
 
 		return $journal;
@@ -37,9 +39,9 @@ class Journal_model extends CI_Model {
 class Journal {
 	use \CouchHelper\ParsableToCouch;
 
-	public $patient;
+	public $patientId;
 	public $text;
-	public $author;
+	public $authorId;
 	public $writtenAt;
 	public $submittedAt;
 
