@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {AccountService} from '../services/AccountService';
+import {AccountService} from '../services/account.service';
+import {Router} from '@angular/router';
+import {catchError} from 'rxjs/operators';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-login',
@@ -10,17 +13,24 @@ export class LoginComponent implements OnInit {
 
   public username: string;
   public password: string;
+  public errorMessage: string;
+  public connectionStatus: boolean;
 
-  constructor(private accService: AccountService) { }
+  constructor(
+    private accService: AccountService,
+    private router: Router) { }
 
   ngOnInit() {
+    this.connectionStatus = navigator.onLine;
+    window.addEventListener('online', _ => { this.connectionStatus = true; });
+    window.addEventListener('offline', _ => { this.connectionStatus = false; });
   }
 
   onSubmit() {
-    console.log('login clicked');
-
     this.accService.authenticate(this.username, this.password).subscribe(response => {
-      console.log('Response: ', response);
+      if (response.apiKey !== '') {
+        this.router.navigate(['home']);
+      }
     });
   }
 

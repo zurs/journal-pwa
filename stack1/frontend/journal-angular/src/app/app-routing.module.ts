@@ -5,7 +5,8 @@ import {HomeComponent} from './home/home.component';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent},
-  { path: 'home', component: HomeComponent }
+  { path: 'home', component: HomeComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' }
   /*{ path: 'crisis-center', component: CrisisListComponent },
   { path: 'hero/:id',      component: HeroDetailComponent },
   {
@@ -26,6 +27,9 @@ const appRoutes: Routes = [
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
     )
+  ],
+  exports: [
+    RouterModule
   ]
 })
-export class AppModule { }
+export class AppRoutingModule { }

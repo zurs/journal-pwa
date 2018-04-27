@@ -8,9 +8,12 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
 import {FormsModule} from '@angular/forms';
-import {AccountService} from './services/AccountService';
+import {AccountService} from './services/account.service';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HomeComponent} from './home/home.component';
+import {AppRoutingModule} from './app-routing.module';
+
+
 
 @NgModule({
   declarations: [
@@ -22,7 +25,8 @@ import {HomeComponent} from './home/home.component';
     BrowserModule,
     FormsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [AccountService],
   bootstrap: [AppComponent]
