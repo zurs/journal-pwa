@@ -19,12 +19,12 @@ class Account_model extends CI_Model{
 		parent::__construct();
 	}
 
-	public function create(Account $account): Account{
+	public function create(Account $account): Account {
 
 		$account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
 		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()){
+		if(!$client->databaseExists()) {
 			$client->createDatabase();
 		}
 
@@ -46,11 +46,30 @@ class Account_model extends CI_Model{
 
 	}
 
-	public function update(){
+	public function update(Account $account) : bool {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
+		if(!$client->databaseExists()) {
+			$client->createDatabase();
+		}
 
+		$response = null;
+		try {
+			$response = $client->storeDoc(Account::parseToDocument($account, true));
+		} catch(Exception $e) {
+
+			$response = null;
+		}
+
+		if($response !== null) {
+			$account->rev = $response->rev;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	public function getByUsername($username){
+	public function getByUsername($username) {
 		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
 		if(!$client->databaseExists()){
 			$client->createDatabase();
@@ -67,19 +86,24 @@ class Account_model extends CI_Model{
 		return $result;
 	}
 
-	public function isAuthenticated(Account $account, Account $dbAccount) : bool {
-		$result = false;
+	public function authenticate(Account $account, Account $dbAccount) : string {
 		if($account->username === $dbAccount->username) {
-			$result = password_verify($account->password, $dbAccount->password);
+			$isAuth = password_verify($account->password, $dbAccount->password);
+
+			if($isAuth) {
+				$dbAccount->apiKey = Uuid::uuid4();
+				$this->update($dbAccount);
+				return $dbAccount->apiKey;
+			}
 		}
-		return $result;
+
+		return null;
 	}
 
 
 }
 
 class Account {
-
 	/*
 	 * @var string
 	 */
@@ -95,13 +119,25 @@ class Account {
 	 */
 	public $password;
 
-	public static function parseToDocument(Account $account, $includeID = false) : stdClass {
-		$parsedAccount = new stdClass();
-		$parsedAccount->username = $account->username;
-		$parsedAccount->password = $account->password;
+	/*
+	 * @var string
+	 */
+	public $apiKey;
 
-		if($includeID) {
-			$parsedAccount->id = $account->id;
+	/*
+	 * @var string
+	 */
+	public $rev;
+
+	public static function parseToDocument(Account $account, $update = false) : stdClass {
+		$parsedAccount = new stdClass();
+		$parsedAccount->username 	= $account->username;
+		$parsedAccount->password 	= $account->password;
+		$parsedAccount->apiKey		= $account->apiKey;
+
+		if($update) {
+			$parsedAccount->_id 	= $account->id;
+			$parsedAccount->_rev 	= $account->rev;
 		}
 
 		return $parsedAccount;
@@ -109,9 +145,11 @@ class Account {
 
 	public static function parseFromDocument(stdClass $document) : Account {
 		$account = new Account();
-		$account->username = $document->username;
-		$account->password = $document->password;
-		$account->id = $document->_id;
+		$account->username 	= $document->username;
+		$account->password 	= $document->password;
+		$account->apiKey	= $document->apiKey;
+		$account->id 		= $document->_id;
+		$account->rev		= $document->_rev;
 
 		return $account;
 	}
