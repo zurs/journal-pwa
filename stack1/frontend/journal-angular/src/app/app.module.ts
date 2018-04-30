@@ -12,7 +12,7 @@ import {AccountService} from './services/account.service';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HomeComponent} from './home/home.component';
 import {AppRoutingModule} from './app-routing.module';
-
+import {PatientsService} from './services/patients.service';
 
 
 @NgModule({
@@ -28,7 +28,10 @@ import {AppRoutingModule} from './app-routing.module';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [AccountService],
+  providers: [
+    AccountService,
+    PatientsService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
