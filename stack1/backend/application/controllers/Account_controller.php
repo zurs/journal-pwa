@@ -17,8 +17,6 @@ class Account_controller extends CI_Controller{
 		$account->password = $this->input->post('password');
 		$dbAccount = $this->account_model->getByUsername($account->username);
 
-
-
 		if($dbAccount !== null) {
 			$apiKey = $this->account_model->authenticate($account, $dbAccount);
 
@@ -42,12 +40,5 @@ class Account_controller extends CI_Controller{
 		} else {
 			$this->jsonresponse->Error("Could not create");
 		}
-	}
-	public function update() {
-	}
-	public function delete() {
-	}
-
-	public function get() {
 	}
 }
