@@ -22,26 +22,8 @@ class Account_model extends CI_Model{
 
 		$account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
-
-		$response = null;
-		try {
-			$response = $client->storeDoc(Account::parseToDocument($account));
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$account->id = $response->id;
-		}
-		else {
-			$account = null;
-		}
-
-		return $account;
+		$client = $this->couch_client->getMasterClient('test1');
+		return $this->couch_client->upsert($account, $client);
 
 	}
 
@@ -75,9 +57,10 @@ class Account_model extends CI_Model{
 			$isAuth = password_verify($account->password, $dbAccount->password);
 
 			if($isAuth) {
+				$client = $this->couch_client->getMasterClient('test1');
 				$dbAccount->apiKey = Uuid::uuid4();
-				$this->update($dbAccount);
-				return $dbAccount->apiKey;
+				$apiKey = !!$this->couch_client->upsert($dbAccount, $client) ? $dbAccount->apiKey : '';
+				return $apiKey;
 			}
 		}
 

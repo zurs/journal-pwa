@@ -15,25 +15,10 @@ class Journal_model extends CI_Model {
 	}
 
 	public function create(Journal $journal): Journal {
-		$client = $this->couch_client->getMasterDatabaseClient('test1_journals');
+		$client = $this->couch_client->getMasterClient('test1_journals');
 
 		$journal->submittedAt = date('Y-m-d H:i:s');
-
-		$response = null;
-		try {
-			$response = $client->storeDoc(Journal::parseToDocument($journal));
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$journal->id = $response->id;
-		}
-		else {
-			$journal = null;
-		}
-
-		return $journal;
+		return $this->couch_client->upsert($journal, $client);
 	}
 }
 
