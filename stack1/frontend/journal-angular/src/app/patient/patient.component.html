@@ -7,7 +7,11 @@
     <div *ngFor="let note of patient.journals">
       <div>
         Skriven: {{note.submittedAt | date:'full'}}
-        <button class="pull-right btn btn-sm btn-primary" (click)="showJournalText(note.id)">Visa text</button>
+        <button *ngIf="!note.text" class="pull-right btn btn-sm btn-primary" (click)="showJournalText(note.id)">Visa text</button>
+        <div *ngIf="note.text">
+          <h5>Text:</h5>
+          <p>{{note.text}}</p>
+        </div>
       </div>
       <br>
     </div>
