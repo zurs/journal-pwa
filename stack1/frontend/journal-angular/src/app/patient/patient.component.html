@@ -1,0 +1,15 @@
+
+<div *ngIf="patient">
+  <p>Namn: {{patient.name}}</p>
+  <p>Personnummer: {{patient.ssn}}</p>
+  <br>
+  <div *ngIf="patient.journals">
+    <div *ngFor="let note of patient.journals">
+      <div>
+        Skriven: {{note.submittedAt | date:'full'}}
+        <button class="pull-right btn btn-sm btn-primary" (click)="showJournalText(note.id)">Visa text</button>
+      </div>
+      <br>
+    </div>
+  </div>
+</div>

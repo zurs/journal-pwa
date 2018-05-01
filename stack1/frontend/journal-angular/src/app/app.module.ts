@@ -13,13 +13,16 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HomeComponent} from './home/home.component';
 import {AppRoutingModule} from './app-routing.module';
 import {PatientsService} from './services/patients.service';
+import { PatientComponent } from './patient/patient.component';
+import {JournalService} from './services/journal.service';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    PatientComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,8 @@ import {PatientsService} from './services/patients.service';
   ],
   providers: [
     AccountService,
-    PatientsService
+    PatientsService,
+    JournalService
   ],
   bootstrap: [AppComponent]
 })
