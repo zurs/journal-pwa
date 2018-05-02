@@ -36,7 +36,13 @@ Composer är också nödvändigt då PHP-on-Couch används hittills och det inst
 För att öka trovärdigheten så används code-stylen under.
 
 ### Logiska satser 
-if-satser måste vara på följande form
+if-satser måste vara på följande form:
+```php
+if($logical_comparison) {
+  // If true
+}
+```
+if-else-satser måste vara på följande form:
 ```php
 if($logical_comparison) {
   // If true
