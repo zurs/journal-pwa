@@ -16,9 +16,41 @@ class Journal_model extends CI_Model {
 
 	public function create(Journal $journal): Journal {
 		$client = $this->couch_client->getMasterClient('test1_journals');
+		$journal->submittedAt = time();
 
-		$journal->submittedAt = date('Y-m-d H:i:s');
-		return $this->couch_client->upsert($journal, $client);
+		$response = null;
+		try {
+			$response = $this->couch_client->upsert($journal, $client);
+		} catch(Exception $e) {
+			$response = null;
+		}
+
+		if($response !== null) {
+			$journal->id = $response->id;
+		}
+		else {
+			$journal = null;
+		}
+
+		return $journal;
+	}
+
+	public function getByPatientId($patientId) : array {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+		$selector = ['patientId' => $patientId];
+
+		$docs = $client->find($selector);
+
+		$result = [];
+		if(count($docs) > 0) {
+			foreach($docs AS $doc) {
+				$result[] =  Journal::parseFromDocument($doc);
+			}
+		}
+		return $result;
 	}
 }
 
