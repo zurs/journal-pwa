@@ -8,8 +8,12 @@
 
 class Journal_controller extends CI_Controller {
 
+	use ApiKeyAuthenticated;
+
 	function __construct() {
 		parent::__construct();
+		$this->authenticateRequest();
+
 		$this->load->model('patient_model');
 		$this->load->model('journal_model');
 		$this->load->model('account_model');

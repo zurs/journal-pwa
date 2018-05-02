@@ -8,9 +8,12 @@
 
 class Patient_controller extends CI_Controller {
 
-	function __construct()
-	{
+	use ApiKeyAuthenticated;
+
+	function __construct(){
 		parent::__construct();
+		$this->authenticateRequest();
+
 		$this->load->model('journal_model');
 		$this->load->model('patient_model');
 	}
