@@ -50,7 +50,7 @@ if($logical_comparison) {
   // If false
 }
 ```
-**Förutom** ifall `return` används i första satsen.
+**Förutom** ifall `return` används i första satsen **eller* den logiska statsen avbryter exeveringen t.ex via `exit()`.
 Då ska det se ut så här:
 ```php
 if($logical_comparison) {
