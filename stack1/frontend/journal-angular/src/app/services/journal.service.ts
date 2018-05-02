@@ -20,7 +20,7 @@ export class JournalService {
   }
 
   public getJournal(id: string) {
-    const url = this.SERVER_URL + '/journal/' + id + '?apiKey=' + this.accService.apiKey;
+    const url = this.SERVER_URL + '/journal/' + id + '?apiKey=' + this.accService.getApiKey();
     return this.http.get<JournalModel>(url).pipe(
       tap(response => console.log(response))
     );
@@ -34,5 +34,20 @@ export class JournalService {
         }
       }
     });
+  }
+
+  public newJournalNote(text: string, patientId: string) {
+    const writtenAt = Math.round((new Date()).getTime() / 1000);
+    console.log('writtenAt: ', writtenAt);
+    const url = this.SERVER_URL + '/journal';
+
+    const sendData = {
+      apiKey: this.accService.getApiKey(),
+      writtenAt: writtenAt,
+      text: text,
+      patientId: patientId
+    };
+
+    return this.http.post(url, sendData);
   }
 }

@@ -13,6 +13,8 @@ import {JournalService} from '../services/journal.service';
 export class PatientComponent implements OnInit {
   public id: string;
   public patient: PatientModel;
+  public newNoteBool: boolean;
+  public newNoteText: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,17 +23,28 @@ export class PatientComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.id = params.get('id');
-      this.patientService.getPatient(this.id).subscribe(patient => {
-        this.patient = patient;
-
-      });
-    });
+    this.loadPatient();
   }
 
   showJournalText(journalId: string) {
     this.journalService.loadJournalText(this.patient.journals, journalId);
+  }
+
+  private loadPatient() {
+    this.route.paramMap.subscribe(params => {
+      this.id = params.get('id');
+      this.patientService.getPatient(this.id).subscribe(patient => {
+        this.patient = patient;
+      });
+    });
+  }
+
+  newNote() {
+    this.journalService.newJournalNote(this.newNoteText, this.id).subscribe(response => {
+      this.loadPatient();
+      this.newNoteText = '';
+      this.newNoteBool = false;
+    });
   }
 
 }

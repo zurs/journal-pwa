@@ -25,7 +25,18 @@ export class AccountService {
     return this.http.post<any>(url, sendData, httpOptions).pipe(
       tap(response => {
         this.apiKey = response.apiKey;
+        window.localStorage.setItem('apiKey', this.apiKey);
       })
     );
+  }
+
+  public getApiKey() {
+    if (!this.apiKey) {
+      const localApiKey = window.localStorage.getItem('apiKey');
+      if (localApiKey) {
+        this.apiKey = localApiKey;
+      }
+    }
+    return this.apiKey;
   }
 }
