@@ -11,14 +11,14 @@ class Couch_client {
 		];
 	}
 
-	public function getMasterClient(string $database, $create = false) : CouchClient {
+	public function getMasterClient(string $database, $create = false) {
 		$ci = &get_instance();
 		$cfgHost 		= $ci->config->item('host', 'couchdb');
 		$cfgPort 		= $ci->config->item('port', 'couchdb');
 		$cfgUser 		= $ci->config->item('user', 'couchdb');
 		$cfgPassword	= $ci->config->item('password', 'couchdb');
 
-		if(key_exists($database, $this->clients)){
+		if(key_exists($database, $this->clients)) {
 			return $this->clients['master'][$database];
 		} else {
 			try{
@@ -30,11 +30,14 @@ class Couch_client {
 
 			if($create && !$client->databaseExists()){
 				$client->createDatabase();
-			} else if(!$client->databaseExists()){
-				return null;
 			}
 
-			$this->clients['master'][$database] = $client;
+			if($client->databaseExists()){
+				$this->clients['master'][$database] = $client;
+			} else {
+				$client = null;
+			}
+
 		}
 		return $client;
 	}
@@ -71,13 +74,17 @@ class Couch_client {
 			$doc = null;
 		}
 
-		return $doc !== null ? CouchHelper\parseFromDocument($doc, $class) : null;
+		if($doc !== null) {
+			return CouchHelper\parseFromDocument($doc, $class);
+		}
+		return null;
 	}
 
 
 	public function getBySelector(array $selector, string $class, CouchClient $client, $limit = 0) {
-		if($limit > 0)
+		if($limit > 0) {
 			$client->limit($limit);
+		}
 
 		$docs = $client->find($selector);
 

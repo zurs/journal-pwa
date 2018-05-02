@@ -37,7 +37,7 @@ class Journal_controller extends CI_Controller {
 
 
 		$returnJournal = $this->journal_model->create($journal);
-		if($returnJournal === null){
+		if($returnJournal === null) {
 			$this->jsonresponse->Error();
 		}
 
@@ -55,8 +55,9 @@ class Journal_controller extends CI_Controller {
 		$log->readerId 	= $this->getCurrentAccount()->id;
 		$result = $this->log_model->create($log);
 
-		if($result === null)
+		if($result === null) {
 			$this->jsonresponse->Error();
+		}
 
 		$this->jsonresponse->Ok($journal);
 	}
