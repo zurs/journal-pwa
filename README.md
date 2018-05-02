@@ -32,9 +32,19 @@ Backenden kan man köra med MAMP genom att göra symlinks från repositoriet til
 
 Composer är också nödvändigt då PHP-on-Couch används hittills och det installeras med Composer.
 
-## Code-style
+# Code-style
 För att öka trovärdigheten så används code-stylen under.
+## Backend
 
+### Inkapsling
+Måste ske på samma rad som klass eller funktions definitionen:
+```php
+class AClass {
+  public function aFunction() {
+  }
+}
+
+```
 ### Logiska satser 
 if-satser måste vara på följande form:
 ```php
