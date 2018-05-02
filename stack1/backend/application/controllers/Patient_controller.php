@@ -35,10 +35,10 @@ class Patient_controller extends CI_Controller {
 
 	public function get($id) {
 		$patient = $this->patient_model->getById($id);
-		if($patient === null)
+		if($patient === null) {
 			$this->jsonresponse->Error("", 404);
-		else
-			$this->jsonresponse->Ok($patient);
+		}
+		$this->jsonresponse->Ok($patient);
 	}
 
 	public function getAll() {

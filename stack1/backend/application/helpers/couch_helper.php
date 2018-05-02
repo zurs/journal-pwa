@@ -9,8 +9,9 @@
 namespace CouchHelper {
 	function parseToDocument($object, $update = false) : \stdClass {
 
-		if(!(array_key_exists(ParsableToCouch::class, class_uses($object))))
+		if(!(array_key_exists(ParsableToCouch::class, class_uses($object)))) {
 			throw new \Exception('$object must use ParsableToCouch');
+		}
 
 		$fields = get_object_vars($object);
 
@@ -40,12 +41,14 @@ namespace CouchHelper {
 
 
 
-		if(!(array_key_exists(ParsableToCouch::class, class_uses($object))))
+		if(!(array_key_exists(ParsableToCouch::class, class_uses($object)))) {
 			throw new \Exception('$class must use ParsableToCouch');
+		}
 
 		foreach($fields AS $field => $value) {
-			if(isset($document->$field))
+			if(isset($document->$field)) {
 				$object->$field = $document->$field;
+			}
 		}
 
 		$object->rev = $document->_rev;
