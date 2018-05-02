@@ -67,3 +67,11 @@ if($logical_comparison) {
 }
 somethingThatResultsInReturnOrExit();
 ```
+
+## Frontend
+arrow-funktioner måste börja på en ny rad på följande sätt:
+```
+waitingForStuff(stuff => {
+  stuff.someFunc();
+})
+```
