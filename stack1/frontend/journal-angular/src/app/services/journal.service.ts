@@ -15,7 +15,6 @@ export class JournalService {
   public getPatientJournals(patientId: string) {
     const url = this.SERVER_URL + '/patient/' + patientId + '/journals?apiKey=' + this.accService.getApiKey();
     return this.http.get<JournalModel[]>(url).pipe(
-      tap(response => console.log(response)),
       tap(journals => {
         journals.forEach(note => { note.submittedAt = String(+note.submittedAt * 1000); });
       })
@@ -25,7 +24,6 @@ export class JournalService {
   public getJournal(id: string) {
     const url = this.SERVER_URL + '/journal/' + id + '?apiKey=' + this.accService.getApiKey();
     return this.http.get<JournalModel>(url).pipe(
-      tap(response => console.log(response)),
       tap(journal => {
         journal.submittedAt = String(+journal.submittedAt * 1000);
       })
@@ -44,7 +42,6 @@ export class JournalService {
 
   public newJournalNote(text: string, patientId: string) {
     const writtenAt = Math.round((new Date()).getTime() / 1000);
-    console.log('writtenAt: ', writtenAt);
     const url = this.SERVER_URL + '/journal';
 
     const sendData = {

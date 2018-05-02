@@ -22,9 +22,7 @@ export class PatientsService {
     const apiKey = this.accService.getApiKey();
 
     const url = this.SERVER_URL + '/patient?apiKey=' + this.accService.getApiKey();
-    return this.http.get<PatientModel[]>(url).pipe(
-      tap(response => console.log(response))
-    );
+    return this.http.get<PatientModel[]>(url);
   }
 
   public getPatient(id: string) {
