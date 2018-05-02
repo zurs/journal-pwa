@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {LOCALE_ID, NgModule} from '@angular/core';
 
 
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -16,7 +16,10 @@ import {PatientsService} from './services/patients.service';
 import { PatientComponent } from './patient/patient.component';
 import {JournalService} from './services/journal.service';
 import {AuthGuardService} from './services/auth-guard.service';
+import localeSv from '@angular/common/locales/sv';
+import {registerLocaleData} from '@angular/common';
 
+registerLocaleData(localeSv);
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import {AuthGuardService} from './services/auth-guard.service';
     AccountService,
     PatientsService,
     JournalService,
-    AuthGuardService
+    AuthGuardService,
+    { provide: LOCALE_ID, useValue: 'sv' }
   ],
   bootstrap: [AppComponent]
 })
