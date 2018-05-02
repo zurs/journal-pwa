@@ -3,6 +3,26 @@
   <p>Namn: {{patient.name}}</p>
   <p>Personnummer: {{patient.ssn}}</p>
   <br>
+  <div>
+    <button class="btn btn-md btn-primary" (click)="newNoteBool = !newNoteBool">
+      <span *ngIf="!newNoteBool">
+        Ny anteckning
+      </span>
+      <span *ngIf="newNoteBool">
+        Stäng ny anteckning
+      </span>
+    </button>
+    <div>
+      <form (submit)="newNote()" id="new_journal_note_form" *ngIf="newNoteBool">
+        <div class="form-group">
+          <label for="new_journal_note_textarea">Anteckning:</label>
+          <textarea name="text" id="new_journal_note_textarea" cols="30" rows="10" class="form-control" [(ngModel)]="newNoteText"></textarea>
+        </div>
+        <button class="btn btn-success" type="submit">Lägg till & Signera</button>
+      </form>
+    </div>
+  </div>
+  <br>
   <div *ngIf="patient.journals">
     <div *ngFor="let note of patient.journals">
       <div>

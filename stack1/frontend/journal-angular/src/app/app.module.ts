@@ -15,6 +15,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {PatientsService} from './services/patients.service';
 import { PatientComponent } from './patient/patient.component';
 import {JournalService} from './services/journal.service';
+import {AuthGuardService} from './services/auth-guard.service';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import {JournalService} from './services/journal.service';
   providers: [
     AccountService,
     PatientsService,
-    JournalService
+    JournalService,
+    AuthGuardService
   ],
   bootstrap: [AppComponent]
 })

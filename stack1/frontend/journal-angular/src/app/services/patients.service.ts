@@ -19,7 +19,7 @@ export class PatientsService {
   }
 
   public getPatients(): Observable<PatientModel[]> {
-    const apiKey = this.accService.apiKey;
+    const apiKey = this.accService.getApiKey();
 
     const url = this.SERVER_URL + '/patient';
     return this.http.get<PatientModel[]>(url).pipe(
@@ -28,7 +28,7 @@ export class PatientsService {
   }
 
   public getPatient(id: string) {
-    const apiKey = this.accService.apiKey;
+    const apiKey = this.accService.getApiKey();
     const url = this.SERVER_URL + '/patient/' + id;
 
     return this.http.get<PatientModel>(url).pipe(
