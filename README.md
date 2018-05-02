@@ -59,3 +59,11 @@ if($logical_comparison) {
 }
 return $another_value;
 ```
+alternativt:
+```php
+if($logical_comparison) {
+  // If true
+  somethingThatResultsInReturnOrExit();
+}
+somethingThatResultsInReturnOrExit();
+```
