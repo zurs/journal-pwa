@@ -309,6 +309,7 @@ switch (ENVIRONMENT)
 // Autoload composer libs
 $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
+require_once BASEPATH . '../application/traits/ApiKeyAuthenticated.php';
 
 /*
  * --------------------------------------------------------------------
