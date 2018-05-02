@@ -13,48 +13,14 @@ class Log_model extends CI_Model {
 	}
 
 	public function create(Log $log): Log {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_logs');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
-
+		$client = $this->couch_client->getMasterClient('test1_logs');
 		$log->readAt = time();
-
-		$response = null;
-		try {
-			$response = $client->storeDoc(Log::parseToDocument($log));
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$log->id = $response->id;
-		}
-		else {
-			$log = null;
-		}
-
-		return $log;
+		return $this->couch_client->upsert($log, $client);
 	}
 
 	public function getByJournalId($journalId) : array {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_logs');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
-
-		$selector = ['journalId' => $journalId];
-
-		$docs = $client->find($selector);
-
-		$result = [];
-		if(count($docs) > 0) {
-			foreach($docs AS $doc) {
-				$result[] =  Log::parseFromDocument($doc);
-			}
-		}
-
-		return $result;
+		$client = $this->couch_client->getMasterClient('test1_logs');
+		return $this->couch_client->getBySelector(['journalId' => $journalId], Log::class, $client);
 	}
 }
 
@@ -64,12 +30,4 @@ class Log {
 	public $journalId;
 	public $readerId;
 	public $readAt;
-
-	public static function parseToDocument(Log $log) : stdClass {
-		return CouchHelper\parseToDocument($log, false);
-	}
-
-	public static function parseFromDocument(stdClass $document) : Log {
-		return CouchHelper\parseFromDocument($document, Log::class);
-	}
 }
