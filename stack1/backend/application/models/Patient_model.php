@@ -15,47 +15,25 @@ class Patient_model extends CI_Model {
 		$this->load->library('couch_client');
 	}
 
-	public function create(Patient $patient) : Patient {
+	public function create(Patient $patient) {
 		$client = $this->couch_client->getMasterClient('test1_patients');
-
-		$patient = $this->couch_client->upsert($patient, $client);
-
-		return $patient;
+		return $this->couch_client->upsert($patient, $client);
 	}
 
 	public function getById(string $id) {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_patients');
-		if(!$client->databaseExists()){
-			$client->createDatabase();
-		}
-
-		try {
-			$doc = $client->getDoc($id);
-		}
-		catch(Exception $e) {
-			$doc = null;
-		}
-
-		$result = null;
-		if($doc !== null) {
-			$result = Patient::parseFromDocument($doc);
-		}
-		return $result;
+		$client = $this->couch_client->getMasterClient('test1_patients');
+		return $client->getById($id, Patient::class, $client);
 	}
 
 	public function getAll() : array {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_patients');
-		if(!$client->databaseExists()){
-			$client->createDatabase();
-		}
-
+		$client = $this->couch_client->getMasterClient('test1_patients');
 		$client->include_docs(true);
 		$docs = $client->getAllDocs();
 
 		$result = [];
 		if($docs->total_rows > 0) {
 			foreach($docs->rows as $row) {
-				$result[] = Patient::parseFromDocument($row->doc);
+				$result[] = CouchHelper\parseFromDocument($row->doc, Patient::class);
 			}
 		}
 
@@ -65,18 +43,8 @@ class Patient_model extends CI_Model {
 
 
 class Patient {
-
 	use \Couchhelper\ParsableToCouch;
 
 	public $name;
 	public $ssn;
-
-	public static function parseToDocument(Patient $patient) : stdClass {
-		return CouchHelper\parseToDocument($patient, false);
-	}
-
-	public static function parseFromDocument(stdClass $document) : Patient {
-		return CouchHelper\parseFromDocument($document, Patient::class);
-	}
-
 }
