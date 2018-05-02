@@ -5,6 +5,7 @@
  * Date: 2018-04-27
  * Time: 14:25
  */
+require_once('application/traits/ApiKeyAuthenticated.php');
 
 class Patient_controller extends CI_Controller {
 

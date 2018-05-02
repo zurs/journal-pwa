@@ -1,18 +1,26 @@
 <?php
 
 trait ApiKeyAuthenticated {
-	function authenticateRequest(){
-		$this->load->model('account_model');
+	private $account;
+	public function authenticateRequest(){
+		$ci = &get_instance();
+		$ci->load->model('account_model');
 
-		$apiKey = $this->input->post_get('apiKey');
+		$apiKey = $ci->input->post_get('apiKey');
 
 		if($apiKey === '' || !$apiKey){
-			$this->jsonresponse->Error('API-nyckel saknas');
+			$ci->jsonresponse->Error('API-nyckel saknas', 401);
 		}
 
-		$account = $this->account_model->getByApiKey($apiKey);
-		if(!$account){
-			$this->jsonresponse->Error('Ogiltig nyckel');
+		$this->account = $ci->account_model->getByApiKey($apiKey);
+		if($this->account === null){
+			$ci->jsonresponse->Error('Ogiltig nyckel', 401);
 		}
 	}
+
+
+	public function getCurrentAccount() {
+		return $this->account;
+	}
+
 }
