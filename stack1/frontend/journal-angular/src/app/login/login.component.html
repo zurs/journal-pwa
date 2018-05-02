@@ -12,6 +12,6 @@
       <input type="password" name="password" id="password_login_input" class="form-control" [(ngModel)]="password">
     </div>
 
-    <button type="submit" class="btn btn-primary">Logga in</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!connectionStatus">Logga in</button>
   </form>
 
