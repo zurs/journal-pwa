@@ -1,0 +1,15 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: eliasjohnsson
+ * Date: 2018-05-02
+ * Time: 13:41
+ * Couchdb configuration
+ */
+/*
+ * --- COPY FILE AND REMOVE .example ---
+ */
+$config['couchdb']['host'] 		= '127.0.0.1';
+$config['couchdb']['port'] 		= '5984';
+$config['couchdb']['user'] 		= 'admin';
+$config['couchdb']['password'] 	= 'admin';
