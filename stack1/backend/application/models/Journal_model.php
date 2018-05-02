@@ -9,17 +9,18 @@
 use PHPOnCouch\CouchClient;
 class Journal_model extends CI_Model {
 
-	public function create(Journal $journal): Journal {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
+	function __construct(){
+		parent::__construct();
+		$this->load->library('couch_client');
+	}
 
+	public function create(Journal $journal): Journal {
+		$client = $this->couch_client->getMasterClient('test1_journals');
 		$journal->submittedAt = time();
 
 		$response = null;
 		try {
-			$response = $client->storeDoc(Journal::parseToDocument($journal));
+			$response = $this->couch_client->upsert($journal, $client);
 		} catch(Exception $e) {
 			$response = null;
 		}
@@ -34,7 +35,27 @@ class Journal_model extends CI_Model {
 		return $journal;
 	}
 
-	public function getByPatientId($patientId) : array {
+	public function getById(string $id) {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		try {
+			$doc = $client->getDoc($id);
+		}
+		catch(Exception $e) {
+			$doc = null;
+		}
+
+		$result = null;
+		if($doc !== null) {
+			$result = Journal::parseFromDocument($doc);
+		}
+		return $result;
+	}
+
+	public function getByPatientId(string $patientId) : array {
 		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
 		if(!$client->databaseExists()){
 			$client->createDatabase();

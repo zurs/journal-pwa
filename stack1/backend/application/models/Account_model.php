@@ -22,57 +22,23 @@ class Account_model extends CI_Model{
 
 		$account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
-
-		$response = null;
-		try {
-			$response = $client->storeDoc(Account::parseToDocument($account));
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$account->id = $response->id;
-		}
-		else {
-			$account = null;
-		}
-
-		return $account;
+		$client = $this->couch_client->getMasterClient('test1');
+		return $this->couch_client->upsert($account, $client);
 
 	}
 
 	public function update(Account $account) : bool {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
+		$client = $this->couch_client->getMasterClient('test1');
 
-		$response = null;
-		try {
-			$accountDoc = Account::parseToDocument($account, true);
-			$response = $client->storeDoc($accountDoc);
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$account->rev = $response->rev;
+		if($this->couch_client->upsert($account, $client) !== null){
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
-
-	public function getByUsername($username) {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
-		if(!$client->databaseExists()){
-			$client->createDatabase();
-		}
+	
+	public function getByUsername(string $username) {
+		$client = $this->couch_client->getMasterClient('test1');
 		$selector = ['username' => $username];
 
 		$docs = $client->limit(1)->find($selector);
@@ -90,16 +56,17 @@ class Account_model extends CI_Model{
 			$isAuth = password_verify($account->password, $dbAccount->password);
 
 			if($isAuth) {
+				$client = $this->couch_client->getMasterClient('test1');
 				$dbAccount->apiKey = Uuid::uuid4();
-				$this->update($dbAccount);
-				return $dbAccount->apiKey;
+				$apiKey = !!$this->couch_client->upsert($dbAccount, $client) ? $dbAccount->apiKey : '';
+				return $apiKey;
 			}
 		}
 
 		return null;
 	}
 
-	public function getByApiKey($apiKey){
+	public function getByApiKey(string $apiKey) {
 		if($apiKey === null)
 			return null;
 
@@ -115,6 +82,26 @@ class Account_model extends CI_Model{
 		if(count($docs) === 1) {
 			$accountDoc = reset($docs);
 			$result = Account::parseFromDocument($accountDoc);
+		}
+		return $result;
+	}
+
+	public function getById(string $id) {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		try {
+			$doc = $client->getDoc($id);
+		}
+		catch(Exception $e) {
+			$doc = null;
+		}
+
+		$result = null;
+		if($doc !== null) {
+			$result = Account::parseFromDocument($doc);
 		}
 		return $result;
 	}

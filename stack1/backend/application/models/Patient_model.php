@@ -10,25 +10,15 @@ use PHPOnCouch\CouchClient;
 
 class Patient_model extends CI_Model {
 
+	function __construct(){
+		parent::__construct();
+		$this->load->library('couch_client');
+	}
+
 	public function create(Patient $patient) : Patient {
-		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_patients');
-		if(!$client->databaseExists()) {
-			$client->createDatabase();
-		}
+		$client = $this->couch_client->getMasterClient('test1_patients');
 
-		$response = null;
-		try {
-			$response = $client->storeDoc(Patient::parseToDocument($patient));
-		} catch(Exception $e) {
-			$response = null;
-		}
-
-		if($response !== null) {
-			$patient->id = $response->id;
-		}
-		else {
-			$patient = null;
-		}
+		$patient = $this->couch_client->upsert($patient, $client);
 
 		return $patient;
 	}
