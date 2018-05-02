@@ -22,7 +22,7 @@ class Patient_model extends CI_Model {
 
 	public function getById(string $id) {
 		$client = $this->couch_client->getMasterClient('test1_patients');
-		return $client->getById($id, Patient::class, $client);
+		return $this->couch_client->getById($id, Patient::class, $client);
 	}
 
 	public function getAll() : array {

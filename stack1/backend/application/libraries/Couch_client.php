@@ -75,7 +75,7 @@ class Couch_client {
 	}
 
 
-	public function getBySelector(array $selector,string $class,CouchClient $client, $limit = 0) {
+	public function getBySelector(array $selector, string $class, CouchClient $client, $limit = 0) {
 		if($limit > 0)
 			$client->limit($limit);
 
