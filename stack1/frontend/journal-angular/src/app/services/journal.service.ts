@@ -13,7 +13,7 @@ export class JournalService {
               private accService: AccountService) { }
 
   public getPatientJournals(patientId: string) {
-    const url = this.SERVER_URL + '/patient/' + patientId + '/journals';
+    const url = this.SERVER_URL + '/patient/' + patientId + '/journals?apiKey=' + this.accService.getApiKey();
     return this.http.get<JournalModel[]>(url).pipe(
       tap(response => console.log(response))
     );

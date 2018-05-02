@@ -21,7 +21,7 @@ export class PatientsService {
   public getPatients(): Observable<PatientModel[]> {
     const apiKey = this.accService.getApiKey();
 
-    const url = this.SERVER_URL + '/patient';
+    const url = this.SERVER_URL + '/patient?apiKey=' + this.accService.getApiKey();
     return this.http.get<PatientModel[]>(url).pipe(
       tap(response => console.log(response))
     );
@@ -29,7 +29,7 @@ export class PatientsService {
 
   public getPatient(id: string) {
     const apiKey = this.accService.getApiKey();
-    const url = this.SERVER_URL + '/patient/' + id;
+    const url = this.SERVER_URL + '/patient/' + id + '?apiKey=' + this.accService.getApiKey();
 
     return this.http.get<PatientModel>(url).pipe(
       tap(patient => {
