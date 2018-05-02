@@ -31,3 +31,25 @@ Backenden kan man köra med MAMP genom att göra symlinks från repositoriet til
 `/stack2/backend/` => `Application/MAMP/htdocs/stack2/`
 
 Composer är också nödvändigt då PHP-on-Couch används hittills och det installeras med Composer.
+
+## Code-style
+För att öka trovärdigheten så används code-stylen under.
+
+### Logiska satser 
+if-satser måste vara på följande form
+```php
+if($logical_comparison) {
+  // If true
+} else {
+  // If false
+}
+```
+**Förutom** ifall `return` används i första satsen.
+Då ska det se ut så här:
+```php
+if($logical_comparison) {
+  // If true
+  return $a_value;
+}
+return $another_value;
+```
