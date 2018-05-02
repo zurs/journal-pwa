@@ -21,6 +21,10 @@ export class LoginComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
+    // Check if already logged in
+    if (!!this.accService.getApiKey()) {
+      this.router.navigate(['home']);
+    }
     this.connectionStatus = navigator.onLine;
     window.addEventListener('online', _ => { this.connectionStatus = true; });
     window.addEventListener('offline', _ => { this.connectionStatus = false; });

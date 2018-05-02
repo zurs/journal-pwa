@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, tap} from 'rxjs/operators';
+import {CanActivate} from '@angular/router';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -10,7 +11,7 @@ const httpOptions = {
 export class AccountService {
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
 
-  public apiKey: string;
+  private apiKey: string;
 
   constructor(private http: HttpClient) {
   }
@@ -38,5 +39,10 @@ export class AccountService {
       }
     }
     return this.apiKey;
+  }
+
+  public logout() {
+    this.apiKey = null;
+    window.localStorage.setItem('apiKey', '');
   }
 }
