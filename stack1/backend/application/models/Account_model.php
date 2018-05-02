@@ -11,8 +11,7 @@ use Ramsey\Uuid\Uuid;
 class Account_model extends CI_Model{
 
 
-	public function __construct()
-	{
+	public function __construct() {
 		parent::__construct();
 	}
 
@@ -41,16 +40,18 @@ class Account_model extends CI_Model{
 
 			if($isAuth) {
 				$dbAccount->apiKey = Uuid::uuid4();
-				return $this->update($dbAccount) ? $dbAccount->apiKey : null;
+				if($this->update($dbAccount)) {
+					return $dbAccount->apiKey;
+				}
 			}
 		}
-
 		return null;
 	}
 
 	public function getByApiKey(string $apiKey) {
-		if($apiKey === null)
+		if($apiKey === null) {
 			return null;
+		}
 
 		$client = $this->couch_client->getMasterClient('test1');
 		return $this->couch_client->getBySelector(['apiKey' => $apiKey], Account::class, $client, 1);

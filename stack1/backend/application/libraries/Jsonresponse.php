@@ -33,14 +33,15 @@ class Jsonresponse
 	private function _createResponse($data, $status, $exit = true) {
 		$this->_setHeaders($status);
 		$json = null;
-		if($data !== null)
+		if($data !== null) {
 			$json = $this->_parseJson($data);
+		}
+
 
 		if($exit) {
 			$this->_exitResponse($json);
-		} else {
-			return $json;
 		}
+		return $json;
 	}
 
 	private function _setHeaders(int $status, string $contentType = Jsonresponse::CONTENT_TYPE_JSON) {

@@ -10,7 +10,7 @@ use PHPOnCouch\CouchClient;
 
 class Patient_model extends CI_Model {
 
-	function __construct(){
+	function __construct() {
 		parent::__construct();
 		$this->load->library('couch_client');
 	}

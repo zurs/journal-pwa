@@ -21,7 +21,7 @@ class Account_controller extends CI_Controller{
 			$apiKey = $this->account_model->authenticate($account, $dbAccount);
 
 			if($apiKey !== null) {
-				exit($this->jsonresponse->Ok(['apiKey' => $apiKey]));
+				$this->jsonresponse->Ok(['apiKey' => $apiKey]);
 			}
 		}
 
@@ -37,8 +37,7 @@ class Account_controller extends CI_Controller{
 
 		if($account !== null) {
 			$this->jsonresponse->Ok($account);
-		} else {
-			$this->jsonresponse->Error("Could not create");
 		}
+		$this->jsonresponse->Error("Could not create");
 	}
 }
