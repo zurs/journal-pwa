@@ -39,12 +39,4 @@ class Journal {
 	public $authorId;
 	public $writtenAt;
 	public $submittedAt;
-
-	public static function parseToDocument(Journal $journal) : stdClass {
-		return CouchHelper\parseToDocument($journal, false);
-	}
-
-	public static function parseFromDocument(stdClass $document) : Journal {
-		return CouchHelper\parseFromDocument($document, Journal::class);
-	}
 }
