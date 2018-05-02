@@ -3,13 +3,7 @@
 use PHPOnCouch\CouchClient;
 
 class Couch_client {
-
 	private $clients;
-
-	private $username = 'admin';
-	private $password = 'admin';
-	private $address  = '127.0.0.1:5984';
-
 	public function __construct(){
 		$this->clients = [
 			'master' => [],
@@ -18,11 +12,17 @@ class Couch_client {
 	}
 
 	public function getMasterClient(string $database, $create = false) : CouchClient {
+		$ci = &get_instance();
+		$cfgHost 		= $ci->config->item('host', 'couchdb');
+		$cfgPort 		= $ci->config->item('port', 'couchdb');
+		$cfgUser 		= $ci->config->item('user', 'couchdb');
+		$cfgPassword	= $ci->config->item('password', 'couchdb');
+
 		if(key_exists($database, $this->clients)){
 			return $this->clients['master'][$database];
 		} else {
 			try{
-				$dbUrl = "http://".$this->username.":".$this->password."@".$this->address;
+				$dbUrl = "http://$cfgUser:$cfgPassword@$cfgHost:$cfgPort";
 				$client = new CouchClient($dbUrl, $database);
 			} catch(Exception $e){
 				return null;
