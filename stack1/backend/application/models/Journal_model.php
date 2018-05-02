@@ -35,7 +35,27 @@ class Journal_model extends CI_Model {
 		return $journal;
 	}
 
-	public function getByPatientId($patientId) : array {
+	public function getById(string $id) {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		try {
+			$doc = $client->getDoc($id);
+		}
+		catch(Exception $e) {
+			$doc = null;
+		}
+
+		$result = null;
+		if($doc !== null) {
+			$result = Journal::parseFromDocument($doc);
+		}
+		return $result;
+	}
+
+	public function getByPatientId(string $patientId) : array {
 		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1_journals');
 		if(!$client->databaseExists()){
 			$client->createDatabase();

@@ -2,5 +2,5 @@
 export class JournalModel {
   public id: string;
   public text: string;
-  public writtenAt: string;
+  public submittedAt: string;
 }

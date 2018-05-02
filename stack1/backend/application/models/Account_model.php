@@ -36,10 +36,9 @@ class Account_model extends CI_Model{
 			return false;
 		}
 	}
-
-	public function getByUsername($username) {
+	
+	public function getByUsername(string $username) {
 		$client = $this->couch_client->getMasterClient('test1');
-
 		$selector = ['username' => $username];
 
 		$docs = $client->limit(1)->find($selector);
@@ -67,7 +66,7 @@ class Account_model extends CI_Model{
 		return null;
 	}
 
-	public function getByApiKey($apiKey){
+	public function getByApiKey(string $apiKey) {
 		if($apiKey === null)
 			return null;
 
@@ -83,6 +82,26 @@ class Account_model extends CI_Model{
 		if(count($docs) === 1) {
 			$accountDoc = reset($docs);
 			$result = Account::parseFromDocument($accountDoc);
+		}
+		return $result;
+	}
+
+	public function getById(string $id) {
+		$client = new CouchClient('http://admin:admin@127.0.0.1:5984', 'test1');
+		if(!$client->databaseExists()){
+			$client->createDatabase();
+		}
+
+		try {
+			$doc = $client->getDoc($id);
+		}
+		catch(Exception $e) {
+			$doc = null;
+		}
+
+		$result = null;
+		if($doc !== null) {
+			$result = Account::parseFromDocument($doc);
 		}
 		return $result;
 	}
