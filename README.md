@@ -37,7 +37,7 @@ För att öka trovärdigheten så används code-stylen under.
 ## Backend
 
 ### Inkapsling
-Måste ske på samma rad som klass eller funktions definitionen:
+Måste ske på samma rad som klass- eller funktionsdefinitionen:
 ```php
 class AClass {
   public function aFunction() {
