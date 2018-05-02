@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {PatientsService} from '../services/patients.service';
+import {PatientModel} from '../models/patient.model';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  public patients: PatientModel[] = [];
+
+  constructor(
+    private patientService: PatientsService
+  ) { }
 
   ngOnInit() {
+    this.patientService.getPatients().subscribe((response) => {
+      response.forEach(patientJson => {
+        this.patients.push(PatientModel.parseFromJson(patientJson));
+      });
+    });
   }
 
 }

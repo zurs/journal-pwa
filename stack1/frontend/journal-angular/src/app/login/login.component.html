@@ -1,4 +1,7 @@
 
+  <div *ngIf="!this.connectionStatus" class="alert alert-danger">
+    <p>Det går inte att logga in då enheten saknar anslutning till internet</p>
+  </div>
   <form (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="username_login_input">Användarnamn: </label>

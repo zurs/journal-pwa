@@ -1,3 +1,18 @@
-<p>
-  home works!
-</p>
+
+<h3>Patienter:</h3>
+<table class="table">
+  <thead>
+  <tr>
+    <td>Patient</td>
+    <td>Personnummer</td>
+    <td>Åtgärd</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let patient of patients">
+    <td>{{patient.name}}</td>
+    <td>{{patient.ssn}}</td>
+    <td><button class="btn btn-primary btn-sm right">Läs journal</button></td>
+  </tr>
+  </tbody>
+</table>
