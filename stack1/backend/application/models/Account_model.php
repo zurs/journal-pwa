@@ -53,7 +53,7 @@ class Account_model extends CI_Model{
 			return null;
 
 		$client = $this->couch_client->getMasterClient('test1');
-		return $this->couch->client->getBySelector(['apiKey' => $apiKey], Account::class, $client, 1);
+		return $this->couch_client->getBySelector(['apiKey' => $apiKey], Account::class, $client, 1);
 	}
 
 	public function getById(string $id) {

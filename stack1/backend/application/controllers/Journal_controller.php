@@ -5,6 +5,7 @@
  * Date: 2018-04-27
  * Time: 13:37
  */
+require_once('application/traits/ApiKeyAuthenticated.php');
 
 class Journal_controller extends CI_Controller {
 
@@ -26,14 +27,8 @@ class Journal_controller extends CI_Controller {
 		$journal->writtenAt = $this->input->post('writtenAt');
 		$journal->text      = $this->input->post('text');
 
-		$apiKey 	= $this->input->post('apiKey');
-		$account 	= $this->account_model->getByApiKey($apiKey);
 
-		if($account === null) {
-			$this->jsonresponse->Error();
-		}
-
-		$journal->authorId = $account->id;
+		$journal->authorId = $this->getCurrentAccount()->id;
 		$patient = $this->patient_model->getById($journal->patientId);
 
 		if($patient === null) {
@@ -50,13 +45,6 @@ class Journal_controller extends CI_Controller {
 	}
 
 	public function get($id) {
-		$apiKey 	= $this->input->get('apiKey');
-		$account 	= $this->account_model->getByApiKey($apiKey);
-
-		if($account === null) {
-			$this->jsonresponse->Error();
-		}
-
 		$journal = $this->journal_model->getById($id);
 		if($journal === null) {
 			$this->jsonresponse->Error();
@@ -64,7 +52,7 @@ class Journal_controller extends CI_Controller {
 
 		$log = new Log();
 		$log->journalId = $journal->id;
-		$log->readerId 	= $account->id;
+		$log->readerId 	= $this->getCurrentAccount()->id;
 		$result = $this->log_model->create($log);
 
 		if($result === null)
