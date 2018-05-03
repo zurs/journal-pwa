@@ -18,8 +18,18 @@ class Welcome extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
-	public function index()
-	{
-		$this->load->view('welcome_message');
-	}
+    public function index()
+    {
+        $cluster = Cassandra::cluster()// connects to localhost by default
+        ->build();
+        $keyspace = 'stack2';
+        $session = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
+        $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
+            'SELECT * FROM stack2.accounts'
+        );
+        $future = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
+        $result = $future->get();                      // wait for the result, with an optional timeout
+
+        
+    }
 }
