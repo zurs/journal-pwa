@@ -11,8 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |	https://codeigniter.com/user_guide/general/hooks.html
 |
 */
-$hook['pre_controller'] = function()
-{
+$hook['pre_controller'] = function() {
 	$input = new CI_Input();
 	$method = $input->method();
 	$content_type = $input->get_request_header('content-type');
