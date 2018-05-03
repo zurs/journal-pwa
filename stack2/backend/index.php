@@ -305,6 +305,10 @@ switch (ENVIRONMENT)
 
 	define('VIEWPATH', $view_folder.DIRECTORY_SEPARATOR);
 
+// Autoload composer libs
+$autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
+require $autoloader;
+
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE
