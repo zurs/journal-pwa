@@ -58,7 +58,9 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('json_response');
+
+$autoload['libraries'] = array('cassandra_client', 'json_response');
+
 
 /*
 | -------------------------------------------------------------------
