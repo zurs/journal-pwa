@@ -39,15 +39,17 @@ class Account_model extends CI_Model {
         $keyspace  = 'stack2';
         $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
         $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-            "UPDATE stack2.accounts SET apiKey = '{$account->apiKey}' WHERE username = {$account->username}"
+            "UPDATE stack2.accounts 
+              SET apiKey = '{$account->apiKey}' 
+              WHERE id = {$account->id}"
         );
         $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
-        $result    = $future->get();                      // wait for the result, with an optional timeout
+        $result    = $future->get();  // wait for the result, with an optional timeout
 
         if($result){
-            return $account->apiKey;
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 
@@ -58,8 +60,9 @@ class Account_model extends CI_Model {
             ->from('stack2.accounts');
 
         $result = $this->cassandra_client->run($query);
-        $account = (object)$result[0];
-        $account->id = $account->id->__toString();
+        $account = $result[0];
+        $account = Account::parseFromDocument($account);
+        return $account;
     }
 
     public function authenticate(Account $account, Account $dbAccount) {
@@ -86,6 +89,8 @@ class Account_model extends CI_Model {
 }
 
 class Account {
+
+    use Cql_Pareseable;
 
     public $username;
     public $password;

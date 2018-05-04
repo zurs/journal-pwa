@@ -4,14 +4,18 @@ trait Cql_Pareseable {
 
     public $id;
 
-    public function parseFromDocument($doc){
-        $props = get_object_vars($this);
+    public static function parseFromDocument($doc){
+        $class = get_class();
+        $obj = new $class;
+        $props = array_keys(get_class_vars($class));
 
         foreach ($props as $prop){
             if(array_key_exists($prop, $doc)){
-                $this->$prop = $doc[$prop];
+                $obj->$prop = $doc[$prop];
             }
         }
+
+        return $obj;
     }
 
     public function parseToDocuemnt(): array {
