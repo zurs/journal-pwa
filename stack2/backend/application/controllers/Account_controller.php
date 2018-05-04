@@ -11,6 +11,7 @@ class Account_controller extends CI_Controller {
 	    $account->username = $this->input->post('username');
 	    $account->password = $this->input->post('password');
 
+	    //exit(var_dump($this->input->raw_input_stream));
 	    $dbAccount = $this->account_model->getByUsername($account->username);
 
 	    if($dbAccount) {
