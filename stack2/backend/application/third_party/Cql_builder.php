@@ -119,6 +119,8 @@ class Cql_builder {
 	        $query .= " LIMIT ".$this->limit;
         }
 
+        $query .= 'ALLOW FILTERING';
+
         return $query;
     }
 
