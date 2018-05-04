@@ -308,6 +308,8 @@ switch (ENVIRONMENT)
 // Autoload composer libs
 $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
+// Load traits
+require APPPATH.'/traits/Cql_parseable.php';
 
 /*
  * --------------------------------------------------------------------
