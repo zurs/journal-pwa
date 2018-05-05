@@ -28,15 +28,19 @@ class Cassandra_client {
     }
 
     public function insert(string $table, array $columns){
-	    $cqb = new Cql_builder(Cql_builder::INSERT, $columns);
-        $cqb->from($table);
-        return $cqb;
+	    $builder = new Cql_builder(Cql_builder::INSERT, $columns);
+        $builder->from($table);
+        return $builder;
     }
 
     public function run(Cql_builder $builder) {
-	    exit(var_dump($builder->__toString()));
-	    $statement = new Cassandra\SimpleStatement((string) $builder);
-        $future    = $this->session->executeAsync($statement);
-        return $future->get();
+        try {
+            $statement = new Cassandra\SimpleStatement((string) $builder);
+            $future    = $this->session->executeAsync($statement);
+            return $future->get();
+        } catch(Exception $e) {
+            return null;
+        }
+
     }
 }
