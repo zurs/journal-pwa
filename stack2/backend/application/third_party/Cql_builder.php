@@ -13,7 +13,7 @@ class Cql_builder {
 	const DROP		= 4;
 
 	private $where = [];
-	private $fields = [];
+	private $columns = [];
 	private $values = [];
 	private $table;
 	private $joins = [];
@@ -71,7 +71,7 @@ class Cql_builder {
 
     private function select(array $fields) {
         $this->state = self::SELECT;
-        $this->fields = $fields;
+        $this->columns = $fields;
     }
 
     private function insert(array $data) {
@@ -94,8 +94,15 @@ class Cql_builder {
     public function __toString() {
 	    $query = "";
 	    if($this->state === self::SELECT) {
-            $query .= "SELECT ".implode(", ", $this->fields). " ";
+            $query .= "SELECT ".implode(", ", $this->columns). " ";
             $query .= "FROM ".$this->table." ";
+        } else if($this->state === self::INSERT) {
+            $query .= "INSERT INTO ".$this->table." (".implode(", ", $this->columns).") ";
+            $insertValues = [];
+            foreach($this->values AS $value) {
+                $insertValues[] = $this->_formatValue($value);
+            }
+            $query .= "VALUES (".implode(", ", $insertValues).") ";
         }
 
         if(!empty($this->where)) {
@@ -103,12 +110,7 @@ class Cql_builder {
             $whereArr = [];
 	        foreach($this->where AS $tuple) {
 	            $column = $tuple[0];
-	            $value  = $tuple[1];
-
-
-	            if(is_string($value)) {
-                    $value = '\''.$value.'\'';
-                }
+	            $value  = $this->_formatValue($tuple[1]);
 
 	            $whereArr[] = "$column = $value";
             }
@@ -116,21 +118,33 @@ class Cql_builder {
         }
 
         if($this->limit > 0) {
-	        $query .= " LIMIT ".$this->limit;
+	        $query .= " LIMIT ".$this->limit." ";
         }
 
-        $query .= 'ALLOW FILTERING';
+        if($this->state === self::SELECT){
+            $query .= 'ALLOW FILTERING';
+        }
 
         return $query;
     }
 
+
+    private function _formatValue($value) {
+	    if(!is_numeric($value) && !$this->_isUuid($value)) {
+	        return $value = '\''.$value.'\'';
+        }
+        return $value;
+    }
+
+    private function _isUuid($value) : bool {
+	    return preg_match("/\w+-\w+-\w+-\w+-\w+/", $value) === 1;
+    }
+
     private function _setValues(array $data, int $state) {
 	    foreach($data as $key => $value) {
-            $this->fields[] = $key;
+            $this->columns[] = $key;
             $this->values[] = $value;
         }
 	    $this->state = $state;
     }
-
-
 }

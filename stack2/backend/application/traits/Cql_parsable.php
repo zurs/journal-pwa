@@ -1,6 +1,6 @@
 <?php
 
-trait Cql_Pareseable {
+trait Cql_Parsable {
 
     public $id;
 
@@ -9,9 +9,9 @@ trait Cql_Pareseable {
         $obj = new $class;
         $props = array_keys(get_class_vars($class));
 
-        foreach ($props as $prop){
-            if(array_key_exists($prop, $doc)){
-                $obj->$prop = $doc[$prop];
+        foreach ($props as $prop) {
+            if(isset($doc[$prop])) {
+                $obj->$prop = "".$doc[$prop];
             }
         }
 
