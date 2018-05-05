@@ -115,11 +115,44 @@ class Cql_builder {
             $query .= implode(" AND ", $whereArr)." ";
         }
 
+        if($this->state === self::INSERT){
+	        $query .= 'INSERT INTO ' . $this->table . ' (';
+
+	        // Add the attributes that's gonna be inserted
+	        foreach ($this->fields as $index => $field){
+	            if($index === (count($this->fields) - 1)){
+	                $query .= "{$field}) "; // Add paranthesis and space if it's the last item
+                } else {
+	                $query .= "{$field}, ";
+                }
+            }
+
+            $query .= 'VALUES (';
+            // Add the actual values
+            foreach ($this->values as $index => $value) {
+
+                $tempVal = $value;
+                // Check if it isn't an UUID or number // TODO: Add some type checking that actually works reliably(like table metadata)
+                if(!$this->isUUID4($tempVal)){
+                    var_dump($tempVal);
+                    $tempVal = "'{$tempVal}'";
+                }
+
+                if($index === (count($this->values) - 1)){
+                    $query .= "{$tempVal}) "; // Add paranthesis and space if it's the last item
+                } else {
+                    $query .= "{$tempVal}, ";
+                }
+            }
+        }
+
         if($this->limit > 0) {
 	        $query .= " LIMIT ".$this->limit;
         }
 
-        $query .= 'ALLOW FILTERING';
+        if($this->state === $this::SELECT){
+            $query .= 'ALLOW FILTERING';
+        }
 
         return $query;
     }
@@ -130,6 +163,11 @@ class Cql_builder {
             $this->values[] = $value;
         }
 	    $this->state = $state;
+    }
+
+    private function isUUID4($uuid){
+	    $regex = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+	    return !!count(preg_match($regex, $uuid));
     }
 
 

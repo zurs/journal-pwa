@@ -27,7 +27,14 @@ class Cassandra_client {
 	    return new Cql_builder(Cql_builder::SELECT, $columns);
     }
 
+    public function insert(string $table, array $columns){
+	    $cqb = new Cql_builder(Cql_builder::INSERT, $columns);
+        $cqb->from($table);
+        return $cqb;
+    }
+
     public function run(Cql_builder $builder) {
+	    exit(var_dump($builder->__toString()));
 	    $statement = new Cassandra\SimpleStatement((string) $builder);
         $future    = $this->session->executeAsync($statement);
         return $future->get();
