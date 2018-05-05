@@ -309,7 +309,7 @@ switch (ENVIRONMENT)
 $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
 // Load traits
-require APPPATH.'/traits/Cql_parseable.php';
+require APPPATH.'/traits/Cql_parsable.php';
 
 /*
  * --------------------------------------------------------------------

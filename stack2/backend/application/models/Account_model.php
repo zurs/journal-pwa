@@ -11,23 +11,14 @@ class Account_model extends CI_Model {
 
         $account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
-        $uuid = Uuid::uuid4();
+        $account->id = Uuid::uuid4();
 
-        $cluster   = Cassandra::cluster()                 // connects to localhost by default
-            ->build();
-        $keyspace  = 'stack2';
-        $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
-        $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-            "INSERT INTO stack2.accounts (id, username, password) VALUES (${uuid}, '{$account->username}', '{$account->password}')"
-        );
-        $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
-        $result    = $future->get();                      // wait for the result, with an optional timeout
+        $builder = $this->cassandra_client
+            ->insert('accounts', ['id' => $account->id, 'username' => $account->username, 'password' => $account->password]);
 
-        if($result){
+        if($this->cassandra_client->run($builder)) {
             return $account;
         }
-
-        // Insert account into database and return
         return null;
     }
 
@@ -62,6 +53,7 @@ class Account_model extends CI_Model {
         $result = $this->cassandra_client->run($query);
         $account = $result[0];
         $account = Account::parseFromDocument($account);
+
         return $account;
     }
 
@@ -90,7 +82,7 @@ class Account_model extends CI_Model {
 
 class Account {
 
-    use Cql_Pareseable;
+    use Cql_Parsable;
 
     public $username;
     public $password;
