@@ -11,8 +11,10 @@ class Account_controller extends CI_Controller {
 	    $account->username = $this->input->post('username');
 	    $account->password = $this->input->post('password');
 
+	    //exit(var_dump($this->input->raw_input_stream));
 	    $dbAccount = $this->account_model->getByUsername($account->username);
-	    if(!$account) {
+
+	    if($dbAccount) {
 	        $apiKey = $this->account_model->authenticate($account, $dbAccount);
 	        if($apiKey){
 	            $this->json_response->Ok(['apiKey' => $apiKey]);
@@ -28,7 +30,7 @@ class Account_controller extends CI_Controller {
 
         $account = $this->account_model->create($account);
         if($account){
-            $this->json_response->Ok();
+            $this->json_response->Ok($account);
         }
         $this->json_response->Error('Kunde inte skapa kontot');
     }

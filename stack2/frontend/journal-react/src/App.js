@@ -1,21 +1,42 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
+import LoginForm from './LoginForm';
+import Home from './Home';
+
+import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
+import AccountService from './services/AccountService';
+
+const LoginFormWithRouter = withRouter(LoginForm);
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+
+	constructor(props){
+		super(props);
+		this.state = {
+			isAuthenticated: false
+		};
+		AccountService.authenticationState.subscribe((newState) => {
+			console.log('Is authenticated');
+			this.setState({
+				isAuthenticated: newState
+			});
+		});
+	}
+
+	render() {
+		let currentComponent = (<Route path={'/home'} component={Home}/>);
+		if(!this.state.isAuthenticated){
+			currentComponent = (<LoginFormWithRouter/>);
+		}
+		return (
+			<div className="container">
+				<Router>
+					<div className={'row'}>
+						{currentComponent}
+					</div>
+				</Router>
+			</div>
+		);
+	}
 }
 
 export default App;

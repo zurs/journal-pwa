@@ -23,6 +23,7 @@ class Welcome extends CI_Controller {
 
 	    $query = $this->cassandra_client
             ->select(['id', 'username', 'password'])
+            ->where()
             ->from('stack2.accounts');
 
 	    $result = $this->cassandra_client->run($query);
