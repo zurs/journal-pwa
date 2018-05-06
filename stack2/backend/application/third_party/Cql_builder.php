@@ -103,6 +103,12 @@ class Cql_builder {
                 $insertValues[] = $this->_formatValue($value);
             }
             $query .= "VALUES (".implode(", ", $insertValues).") ";
+        } else if($this->state === self::UPDATE) {
+            $query .= "UPDATE ".$this->table." ";
+            foreach($this->columns AS $index => $column) {
+                $value = $this->_formatValue($this->values[$index]);
+                $query .= "SET $column = $value ";
+            }
         }
 
         if(!empty($this->where)) {
@@ -131,7 +137,7 @@ class Cql_builder {
 
     private function _formatValue($value) {
 	    if(!is_numeric($value) && !$this->_isUuid($value)) {
-	        return $value = '\''.$value.'\'';
+	        return '\''.$value.'\'';
         }
         return $value;
     }

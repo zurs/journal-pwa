@@ -23,25 +23,11 @@ class Account_model extends CI_Model {
     }
 
     public function update(Account $account): bool {
-        // Update account in database and return success status
+        $builder = $this->cassandra_client
+            ->update('accounts', ['apiKey' => $account->apiKey])
+            ->where('id', $account->id);
 
-        $cluster   = Cassandra::cluster()                 // connects to localhost by default
-        ->build();
-        $keyspace  = 'stack2';
-        $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
-        $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-            "UPDATE stack2.accounts 
-              SET apiKey = '{$account->apiKey}' 
-              WHERE id = {$account->id}"
-        );
-        $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
-        $result    = $future->get();  // wait for the result, with an optional timeout
-
-        if($result){
-            return true;
-        } else {
-            return false;
-        }
+        return $this->cassandra_client->run($builder) !== null;
     }
 
     public function getByUsername(string $username) {

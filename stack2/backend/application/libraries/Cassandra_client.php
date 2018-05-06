@@ -23,12 +23,18 @@ class Cassandra_client {
         $this->session = $cluster->connect($keyspace);
     }
 
-    public function select(array $columns) {
+    public function select(array $columns) : Cql_builder {
 	    return new Cql_builder(Cql_builder::SELECT, $columns);
     }
 
-    public function insert(string $table, array $columns){
+    public function insert(string $table, array $columns) : Cql_builder {
 	    $builder = new Cql_builder(Cql_builder::INSERT, $columns);
+        $builder->from($table);
+        return $builder;
+    }
+
+    public function update(string $table, array $columns) : Cql_builder {
+        $builder = new Cql_builder(Cql_builder::UPDATE, $columns);
         $builder->from($table);
         return $builder;
     }
