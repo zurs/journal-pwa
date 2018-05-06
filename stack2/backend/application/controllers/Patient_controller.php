@@ -21,9 +21,9 @@ class Patient_controller extends CI_Controller {
     }
 
     public function get($id){
-        $patient = $this->patient_model->get($id);
+        $patient = $this->patient_model->getById($id);
         if(!$patient){
-            $this->json_response->Error('Kunde inte hämta patienten');
+            $this->json_response->Error('Kunde inte hämta patienten', 404);
         }
         $this->json_response->Ok($patient);
     }

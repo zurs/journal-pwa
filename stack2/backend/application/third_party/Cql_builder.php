@@ -69,6 +69,14 @@ class Cql_builder {
 	    return $this;
     }
 
+    public function getLimit() : int {
+	    return $this->limit;
+    }
+
+    public function getState() : int {
+	    return $this->state;
+    }
+
     private function select(array $fields) {
         $this->state = self::SELECT;
         $this->columns = $fields;
