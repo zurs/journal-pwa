@@ -9,7 +9,7 @@ class Journal_model extends CI_Model {
         $this->load->model('patient_model');
     }
 
-    public function create(Journal $journal) {
+    public function create(Journal $journal): ?Journal {
 
         $accountId = $this->current_account->id;
         $patientId = $this->patient_model->getById($journal->patientId);
@@ -31,8 +31,18 @@ class Journal_model extends CI_Model {
 
     }
 
-    public function get(): Journal {
+    public function get(string $journalId): ?Journal {
+        $query = $this->cassandra_client
+            ->select(['*'])
+            ->from('journals')
+            ->where('id', $journalId)
+            ->limit(1);
 
+        $result = $this->cassandra_client->run($query);
+        if(!$result){
+            return null;
+        }
+        return Journal::parseFromDocument($result);
     }
 
 }

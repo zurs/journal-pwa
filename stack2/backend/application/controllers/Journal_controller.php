@@ -25,11 +25,10 @@ class Journal_controller extends Authenticated_controller {
     }
 
     public function get($id) {
-        $journal = $this->journal_model->getById($id);
+        $journal = $this->journal_model->get($id);
         if($journal === null) {
             $this->json_response->Error();
         }
-
         $this->json_response->Ok($journal);
     }
 }
