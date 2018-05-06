@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PatientService from './services/PatientService';
+import {Link} from "react-router-dom";
 
 export default class PatientList extends Component {
 	constructor(props) {
@@ -14,7 +15,7 @@ export default class PatientList extends Component {
 					<tr>
 						<td>{patient.name}</td>
 						<td>{patient.ssn}</td>
-						<td><a className="btn btn-primary" href={'/journals/'+patient.id}>Läs Journal</a></td>
+						<td><Link className={'btn btn-primary'} to={`/journals/${patient.id}`}>Läs Journal</Link></td>
 					</tr>
 				);});
 			this.setState({});

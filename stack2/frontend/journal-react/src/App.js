@@ -23,7 +23,7 @@ class App extends Component {
 	}
 
 	render() {
-		let currentComponent = (<Route path={'/home'} component={Home}/>);
+		let currentComponent = (<Home/>);
 		if(!this.state.isAuthenticated){
 			currentComponent = (<LoginFormWithRouter/>);
 		}

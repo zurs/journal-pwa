@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PatientList from './PatientList';
+import {Route, Switch} from "react-router-dom";
+import Journals from "./Journals";
 
 class Home extends Component {
 	constructor(props){
@@ -8,7 +10,11 @@ class Home extends Component {
 
 	render(){
 		return (
-			<PatientList/>
+			<Switch>
+				<Route path = "/home" component={PatientList}/>
+				<Route path = "/journals/:number" component={Journals}/>
+			</Switch>
+
 		);
 	}
 }
