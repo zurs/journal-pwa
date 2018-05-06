@@ -49,7 +49,7 @@ class Cassandra_client {
             $result = null;
         }
 
-        if($builder->getState() === Cql_builder::SELECT) {
+        if($result !== null && $builder->getState() === Cql_builder::SELECT) {
             if($result->count() > 0) {
                 if($builder->getLimit() === 1) {
                     return $result[0];
