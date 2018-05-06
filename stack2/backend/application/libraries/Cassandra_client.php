@@ -46,7 +46,6 @@ class Cassandra_client {
             $future    = $this->session->executeAsync($statement);
             $result = $future->get();
         } catch(Exception $e) {
-            exit(var_dump($e->getMessage()));
             return null;
         }
 
