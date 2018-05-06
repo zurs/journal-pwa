@@ -28,11 +28,26 @@ class Patient_model extends CI_Model {
             ->where('id', $id)
             ->limit(1);
 
-        return $this->cassandra_client->run($query);
+        $result = $this->cassandra_client->run($query);
+        if($result !== null && $result->count() === 1) {
+            return Patient::parseFromDocument($result[0]);
+        }
+        return null;
     }
 
     public function getAll(): array {
+        $query = $this->cassandra_client
+            ->select(['*'])
+            ->from('patients');
 
+        $result     = $this->cassandra_client->run($query);
+        $patients   = [];
+        if($result !== null && $result->count() > 0) {
+            foreach($result AS $row) {
+                $patients[] = Patient::parseFromDocument($row);
+            }
+        }
+        return $patients;
     }
 
     public function getJournals(): array {
@@ -42,6 +57,8 @@ class Patient_model extends CI_Model {
 
 
 class Patient {
+    use Cql_Parsable;
+
     public $name;
     public $ssn;
 }

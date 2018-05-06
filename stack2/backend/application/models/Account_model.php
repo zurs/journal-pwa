@@ -38,9 +38,7 @@ class Account_model extends CI_Model {
             ->limit(1);
 
         $result = $this->cassandra_client->run($query);
-        $account = $result[0];
-        $account = Account::parseFromDocument($account);
-
+        $account =  Account::parseFromDocument($result[0]);
         return $account;
     }
 
