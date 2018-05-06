@@ -32,9 +32,10 @@ class Account_model extends CI_Model {
 
     public function getByUsername(string $username) {
         $query = $this->cassandra_client
-            ->select(['id', 'username', 'password'])
+            ->select(['*'])
             ->where('username', $username)
-            ->from('stack2.accounts');
+            ->from('stack2.accounts')
+            ->limit(1);
 
         $result = $this->cassandra_client->run($query);
         $account = $result[0];

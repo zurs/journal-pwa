@@ -2,50 +2,54 @@
 
 class Json_response {
 
-    public const CONTENT_TYPE_JSON = 'application/json';
-    public const HTTP_OK = 200;
-    public const HTTP_ERROR = 400;
-
+    public const CONTENT_TYPE_JSON 		= 'application/json';
+    public const DEFAULT_OK_STATUS 		= 200;
+    public const DEFAULT_ERROR_STATUS 	= 400;
     private $ci;
 
-    public function __construct(){
+    public function __construct() {
         $this->ci = &get_instance();
+
     }
 
-    public function Ok($data = null, $exit = true){
-        $this->_createResponse($data, self::HTTP_OK, self::CONTENT_TYPE_JSON, $exit);
+    public function Ok($data = null, $status = self::DEFAULT_OK_STATUS, $exit = true) {
+        $this->_createResponse($data, $status, $exit);
     }
 
-    public function Error($data = null, $exit = true){
-        if(is_string($data)){ // Omvandla till array med ett felmeddelande om $data endast är en sträng
-            $data = ['error' => $data];
+    public function Error(string $message = "", $status = self::DEFAULT_ERROR_STATUS, $exit = true) {
+        $data = null;
+        if(mb_strlen($message) > 0) {
+            $data = ['error' => $message];
         }
-        $this->_createResponse($data, self::HTTP_ERROR, self::CONTENT_TYPE_JSON, $exit);
+        $this->_createResponse($data, $status, $exit);
     }
 
-    private function _createResponse($data = null, $status = self::HTTP_OK, $contentType = self::CONTENT_TYPE_JSON, $exit = true){
-        $this->_setHeaders($status, $contentType);
+    private function _createResponse($data, $status, $exit = true) {
+        $this->_setHeaders($status);
         $json = null;
-
-        if($data != null){
+        if($data !== null) {
             $json = $this->_parseJson($data);
         }
 
-        if($exit){
-            $this->ci->output->set_output($json);
-            $this->ci->output->_display();
-            exit();
-        }
 
+        if($exit) {
+            $this->_exitResponse($json);
+        }
         return $json;
     }
 
-    private function _setHeaders($status = self::HTTP_OK, $contentType = self::CONTENT_TYPE_JSON){
+    private function _setHeaders(int $status, string $contentType = self::CONTENT_TYPE_JSON) {
         $this->ci->output->set_status_header($status);
-        $this->ci->output->set_content_type($contentType);
+        $this->ci->output->set_content_type($contentType, 'utf8');
     }
 
-    private function _parseJson($data){
+    private function _exitResponse($data) {
+        $this->ci->output->set_output($data);
+        $this->ci->output->_display();
+        exit();
+    }
+
+    private function _parseJson($data) : String {
         return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }
