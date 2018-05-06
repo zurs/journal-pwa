@@ -1,6 +1,8 @@
 <?php
 
-class Journal_controller extends CI_Controller {
+require_once APPPATH . 'controllers/Authenticated_controller.php';
+
+class Journal_controller extends Authenticated_controller {
 
     function __construct() {
         parent::__construct();
@@ -16,18 +18,18 @@ class Journal_controller extends CI_Controller {
 
         $returnJournal = $this->journal_model->create($journal);
         if($returnJournal === null) {
-            $this->jsonresponse->Error();
+            $this->json_response->Error();
         }
 
-        $this->jsonresponse->Ok($returnJournal);
+        $this->json_response->Ok($returnJournal);
     }
 
     public function get($id) {
         $journal = $this->journal_model->getById($id);
         if($journal === null) {
-            $this->jsonresponse->Error();
+            $this->json_response->Error();
         }
 
-        $this->jsonresponse->Ok($journal);
+        $this->json_response->Ok($journal);
     }
 }

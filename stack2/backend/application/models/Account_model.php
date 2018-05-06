@@ -59,11 +59,31 @@ class Account_model extends CI_Model {
     }
 
     public function getByApiKey(string $apiKey): Account{
+        $query = $this->cassandra_client
+            ->select(['*'])
+            ->where('apiKey', $apiKey)
+            ->from('accounts')
+            ->limit(1);
 
+        $result = $this->cassandra_client->run($query);
+        if($result !== null) {
+            return Account::parseFromDocument($result);
+        }
+        return null;
     }
 
     public function getById(string $id): Account{
+        $query = $this->cassandra_client
+            ->select(['*'])
+            ->where(['id' => $id])
+            ->from('accounts')
+            ->limit(1);
 
+        $result = $this->cassandra_client->run($query);
+        if($result !== null) {
+            return Account::parseFromDocument($result);
+        }
+        return null;
     }
 }
 

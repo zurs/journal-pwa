@@ -144,7 +144,7 @@ class Cql_builder {
 
 
     private function _formatValue($value) {
-	    if(!is_numeric($value) && !$this->_isUuid($value)) {
+	    if(/*!is_numeric($value) &&*/ !$this->_isUuid($value)) {
 	        return '\''.$value.'\'';
         }
         return $value;

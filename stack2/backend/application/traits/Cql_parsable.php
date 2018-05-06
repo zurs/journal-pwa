@@ -10,8 +10,8 @@ trait Cql_Parsable {
         $props = array_keys(get_class_vars($class));
 
         foreach ($props as $prop) {
-            if(isset($doc[$prop])) {
-                $obj->$prop = "".$doc[$prop];
+            if(isset($doc[strtolower($prop)])) {
+                $obj->$prop = "".$doc[strtolower($prop)];
             }
         }
 

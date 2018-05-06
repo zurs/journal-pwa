@@ -5,6 +5,7 @@ use Ramsey\Uuid\Uuid;
 class Patient_model extends CI_Model {
     public function __construct(){
         parent::__construct();
+        $this->load->model('journal_model');
     }
 
     public function create(Patient $patient){
@@ -50,8 +51,22 @@ class Patient_model extends CI_Model {
         return $patients;
     }
 
-    public function getJournals(): array {
+    public function getJournals(string $patientId) {
+        $query = $this->cassandra_client
+            ->select(['id', 'submittedAt', 'patientId'])
+            ->from('journals')
+            ->where('patientid', $patientId);
 
+        $result = $this->cassandra_client->run($query);
+
+        $resultArray = [];
+        if(!$result){
+            return null;
+        }
+        foreach ($result as $res){
+            $resultArray[] = Journal::parseFromDocument($res);
+        }
+        return $resultArray;
     }
 }
 
