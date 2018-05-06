@@ -1,7 +1,8 @@
 import axios from 'axios';
+import AccountService from "./AccountService";
 
 const Request = axios.create({
-	baseURL: 'http://localhost/stack2/patient/',
+	baseURL: 'http://localhost/stack2/patient',
 	headers: {
 		'Content-Type': 'application/json'
 	}
@@ -9,7 +10,11 @@ const Request = axios.create({
 
 const PatientService = {
 	getPatients(callback) {
-		return Request.get('').then((response) => {
+		return Request.get('', {
+			params: {
+				apiKey: AccountService.apiKey
+			}
+		}).then((response) => {
 			callback(response.data)
 		});
 	}
