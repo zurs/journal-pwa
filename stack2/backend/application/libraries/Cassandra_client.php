@@ -46,10 +46,10 @@ class Cassandra_client {
             $future    = $this->session->executeAsync($statement);
             $result = $future->get();
         } catch(Exception $e) {
-            $result = null;
+            return null;
         }
 
-        if($result !== null && $builder->getState() === Cql_builder::SELECT) {
+        if($builder->getState() === Cql_builder::SELECT) {
             if($result->count() > 0) {
                 if($builder->getLimit() === 1) {
                     return $result[0];
