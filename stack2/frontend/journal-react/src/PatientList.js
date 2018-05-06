@@ -24,22 +24,20 @@ export default class PatientList extends Component {
 
 	render() {
 		return (
-			<div className={'row'}>
-				<div>
-					<h3>Patienter:</h3>
-					<table className="table">
-						<thead>
-						<tr>
-							<th>Patient</th>
-							<th>Personnummer</th>
-							<th>Åtgärd</th>
-						</tr>
-						</thead>
-						<tbody>
-							{this.patients}
-						</tbody>
-					</table>
-					<button class="btn btn-warning">Logga ut</button>
-				</div>
-			</div>);}
+			<div className="col-md-6 col-md-offset-3">
+				<h3>Patienter:</h3>
+				<table className="table">
+					<thead>
+					<tr>
+						<th>Patient</th>
+						<th>Personnummer</th>
+						<th>Åtgärd</th>
+					</tr>
+					</thead>
+					<tbody>
+						{this.patients}
+					</tbody>
+				</table>
+				<button class="btn btn-warning">Logga ut</button>
+		</div>);}
 }
