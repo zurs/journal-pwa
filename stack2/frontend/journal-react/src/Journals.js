@@ -1,9 +1,20 @@
 import React, { Component } from 'react';
+import JournalNote from "./JournalNote";
 
 export default class Journals extends Component {
 	constructor(props) {
 		super(props);
 		this.patient = {name: "foo", ssn: "1999-xxxxx"};
+		this.onToggleNote = this.onToggleNote.bind(this);
+		this.state = {showNote: false};
+	}
+
+	onNewNote(note) {
+		console.log(note);
+	}
+
+	onToggleNote() {
+		this.setState({showNote: !this.state.showNote});
 	}
 
 	render() {
@@ -11,17 +22,11 @@ export default class Journals extends Component {
 			<div className="col-md-6 col-md-offset-3">
 				<p>Namn: {this.patient.name}</p>
 				<p>Personnummer: {this.patient.ssn}</p>
-				<button className="btn btn-md btn-primary">
-					<span>Ny anteckning</span>
+				<button className="btn btn-md btn-primary" onClick={this.onToggleNote}>
+					<span>{this.state.showNote ? "Stäng anteckning" : "Ny anteckning"}</span>
 				</button>
 				<br/>
-				<form>
-					<div className='form-group'>
-						<label for="new_journal_note">Anteckning:</label>
-						<textarea name="text" id="new_journal_note" cols="30" rows="10" className="form-control"></textarea>
-					</div>
-					<button className="btn btn-success" type="submit">Lägg till & Signera</button>
-				</form>
+				{this.state.showNote && <JournalNote onNewNote={this.onNewNote}/>}
 				<br/>
 				<div className="well">
 					Skriven: dasda
