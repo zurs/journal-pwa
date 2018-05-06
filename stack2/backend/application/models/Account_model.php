@@ -38,8 +38,10 @@ class Account_model extends CI_Model {
             ->limit(1);
 
         $result = $this->cassandra_client->run($query);
-        $account =  Account::parseFromDocument($result[0]);
-        return $account;
+        if($result !== null && $result->count() === 1) {
+            return Account::parseFromDocument($result[0]);
+        }
+        return null;
     }
 
     public function authenticate(Account $account, Account $dbAccount) {
