@@ -29,8 +29,8 @@ class Patient_model extends CI_Model {
             ->limit(1);
 
         $result = $this->cassandra_client->run($query);
-        if($result !== null && $result->count() === 1) {
-            return Patient::parseFromDocument($result[0]);
+        if($result !== null) {
+            return Patient::parseFromDocument($result);
         }
         return null;
     }
@@ -42,7 +42,7 @@ class Patient_model extends CI_Model {
 
         $result     = $this->cassandra_client->run($query);
         $patients   = [];
-        if($result !== null && $result->count() > 0) {
+        if($result !== null) {
             foreach($result AS $row) {
                 $patients[] = Patient::parseFromDocument($row);
             }

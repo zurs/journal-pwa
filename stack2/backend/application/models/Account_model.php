@@ -38,8 +38,8 @@ class Account_model extends CI_Model {
             ->limit(1);
 
         $result = $this->cassandra_client->run($query);
-        if($result !== null && $result->count() === 1) {
-            return Account::parseFromDocument($result[0]);
+        if($result !== null) {
+            return Account::parseFromDocument($result);
         }
         return null;
     }

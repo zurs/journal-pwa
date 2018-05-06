@@ -40,13 +40,25 @@ class Cassandra_client {
     }
 
     public function run(Cql_builder $builder) {
+	    $result = null;
         try {
             $statement = new Cassandra\SimpleStatement((string) $builder);
             $future    = $this->session->executeAsync($statement);
-            return $future->get();
+            $result = $future->get();
         } catch(Exception $e) {
+            $result = null;
+        }
+
+        if($builder->getState() === Cql_builder::SELECT) {
+            if($result->count() > 0) {
+                if($builder->getLimit() === 1) {
+                    return $result[0];
+                }
+                return $result;
+            }
             return null;
         }
 
+        return $result;
     }
 }
