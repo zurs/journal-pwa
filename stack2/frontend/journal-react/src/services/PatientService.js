@@ -10,7 +10,7 @@ const Request = axios.create({
 const PatientService = {
 	getPatients(callback) {
 		return Request.get('').then((response) => {
-			callback(response)
+			callback(response.data)
 		});
 	}
 };

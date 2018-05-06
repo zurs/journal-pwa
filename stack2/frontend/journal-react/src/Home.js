@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PatientList from './PatientList';
 
 class Home extends Component {
 	constructor(props){
@@ -7,9 +8,7 @@ class Home extends Component {
 
 	render(){
 		return (
-			<div className={'col-md-6 col-md-offset-3'}>
-				<h2>Home of Journaling</h2>
-			</div>
+			<PatientList/>
 		);
 	}
 }
