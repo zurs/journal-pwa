@@ -62,4 +62,5 @@ $route['patient']['post']           = 'patient_controller/create';
 $route['patient/(:any)/journals']   = 'patient_controller/getJournals/$1';
 
 $route['journal']['post']           = 'journal_controller/create';
-$route['journal/(:any)']['get']      = 'journal_controller/get/$1';
+$route['journal/(:any)']['get']     = 'journal_controller/get/$1';
+$route['journal/(:any)/logs']['get']= 'journal_controller/getLogs/$1';

@@ -31,4 +31,13 @@ class Journal_controller extends Authenticated_controller {
         }
         $this->json_response->Ok($journal);
     }
+
+    public function getLogs($journalId) {
+        $logs = $this->journal_model->getLogs($journalId);
+
+        if($logs === null){
+            $this->json_response->Error('Kunde inte hämta loggar');
+        }
+        $this->json_response->Ok($logs);
+    }
 }
