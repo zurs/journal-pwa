@@ -17,6 +17,19 @@ const PatientService = {
 		}).then((response) => {
 			callback(response.data)
 		});
+	},
+	getJournals(patientId) {
+		return new Promise((success, fail) => {
+			Request.get('/' + patientId + '/journals', {
+				params: {
+					apiKey: AccountService.apiKey
+				}
+			}).then((response) => {
+				success(response.data);
+			}).catch(() => {
+				fail("failed");
+			})
+		});
 	}
 };
 

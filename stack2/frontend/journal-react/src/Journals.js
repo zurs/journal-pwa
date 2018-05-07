@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import NewJournalNote from "./NewJournalNote";
 import JournalNote from "./JournalNote";
+import PatientService from "./services/PatientService";
 
 const JournalList = (props) => {
 	return props.journals.map((journal, index) => {
@@ -13,18 +14,28 @@ export default class Journals extends Component {
 		super(props);
 		this.state = {
 			patient: {name: "foo", ssn: "1999-xxxxx"},
-			journals: [{id: "32asd", submittedAt: "2018-12-12", text: null}],
+			journals: [],
 			showNewNote: false
 		};
+
 		this.onToggleNewNote = this.onToggleNewNote.bind(this);
 		this.onNewNote = this.onNewNote.bind(this);
 		this.onReadNote = this.onReadNote.bind(this);
 	}
 
+	componentDidMount() {
+		const patientId = this.props.match.params.number;
+		PatientService.getJournals(patientId)
+			.then((journals) => {
+				this.setState({journals: journals.map((journal) => {
+					return Object.assign({text: null}, journal);
+				})});
+			});
+	}
+
 	onReadNote(index) {
 		let newJournals = this.state.journals.map((journal, i) => {
 			if(index === i) {
-				journal.text = "foo";
 				return Object.assign({}, journal);
 			}
 			return journal;
