@@ -47,7 +47,7 @@ class Journal_model extends CI_Model {
         $newLog = new Log();
         $newLog->accountId = $this->current_account->id;
         $newLog->journalId = $journalId;
-        $newLog->readAt = date('Y-m-d H:i:s');
+        $newLog->readAt = time() * 1000;
         $newLog->id = Uuid::uuid4();
 
         $newLog = $this->log_model->create($newLog);
