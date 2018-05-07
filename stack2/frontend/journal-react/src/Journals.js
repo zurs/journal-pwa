@@ -52,6 +52,7 @@ export default class Journals extends Component {
 				</button>
 				<br/>
 				{this.state.showNewNote && <NewJournalNote onNewNote={this.onNewNote}/>}
+				<br/>
 				<JournalList journals={this.state.journals} onReadNote={this.onReadNote}/>
 			</div>);
 	}
