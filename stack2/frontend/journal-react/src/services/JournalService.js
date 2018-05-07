@@ -13,7 +13,7 @@ const JournalService = {
 			return new Promise((success, fail) => {
 				Request.get('/' + journalId, {
 					params: {
-						apiKey: AccountService.apiKey
+						apiKey: AccountService.getApiKey()
 					}
 				}).then((response) => {
 					success(response.data);
@@ -26,7 +26,7 @@ const JournalService = {
 			return new Promise((success, fail) => {
 				Request.post('', journal, {
 						params: {
-						apiKey: AccountService.apiKey
+						apiKey: AccountService.getApiKey()
 					}
 				}).then((response) => {
 					success(response.data);

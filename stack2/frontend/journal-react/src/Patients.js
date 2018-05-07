@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PatientService from './services/PatientService';
 import {Link} from "react-router-dom";
+import AccountService from "./services/AccountService";
 
 const PatientRows = (props) => {
 	return props.patients.map((patient) => {
@@ -8,17 +9,18 @@ const PatientRows = (props) => {
 			<tr>
 				<td>{patient.name}</td>
 				<td>{patient.ssn}</td>
-				<td><Link className={'btn btn-primary'} to={`/journals/${patient.id}`}>Läs Journal</Link></td>
+				<td><Link className={'btn btn-primary'} to={`/patient/${patient.id}`}>Läs Journal</Link></td>
 			</tr>
 		);});
 };
 
-export default class PatientList extends Component {
+export default class Patients extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			patients : []
 		};
+		this.onLogout = this.onLogout.bind(this);
 	}
 
 	componentDidMount() {
@@ -26,6 +28,11 @@ export default class PatientList extends Component {
 			.then((patients) => {
 				this.setState({patients: patients});
 			});
+	}
+
+	onLogout() {
+		AccountService.logout();
+		this.props.history.push('/login');
 	}
 
 	render() {
@@ -44,6 +51,6 @@ export default class PatientList extends Component {
 						<PatientRows patients={this.state.patients}/>
 					</tbody>
 				</table>
-				<button class="btn btn-warning">Logga ut</button>
+				<button class="btn btn-warning" onClick={this.onLogout}>Logga ut</button>
 		</div>);}
 }

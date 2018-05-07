@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import AccountService from './services/AccountService';
+import AccountService from "./services/AccountService";
 
-export default class LoginForm extends Component {
+export default class Login extends Component {
 
 	constructor(props) {
 		super(props);
@@ -18,9 +18,16 @@ export default class LoginForm extends Component {
 		e.preventDefault();
 		let username = this.state.username;
 		let password = this.state.password;
-		AccountService.authenticate(username, password, () => {
-			this.props.history.push('/home');
-		});
+		AccountService.login(username, password)
+			.then(() => {
+				this.props.history.push('/home');
+			});
+	}
+
+	componentDidMount() {
+		if(AccountService.getApiKey() !== null) {
+			this.props.history.replace('/home');
+		}
 	}
 
 	usernameChange(e){
