@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PatientList from './PatientList';
+import Patients from './Patients';
 import {Route, Switch} from "react-router-dom";
 import Journals from "./Journals";
 
@@ -11,7 +11,7 @@ class Home extends Component {
 	render(){
 		return (
 			<Switch>
-				<Route exact path = "/" component={PatientList}/>
+				<Route exact path = "/" component={Patients}/>
 				<Route path = "/patient/:number" component={Journals}/>
 			</Switch>
 

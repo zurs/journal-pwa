@@ -27,6 +27,10 @@ const AccountService = {
 			apiKey = localStorage.getItem('apiKey');
 		}
 		return apiKey;
+	},
+	logout() {
+		apiKey = null;
+		localStorage.removeItem('apiKey');
 	}
 };
 

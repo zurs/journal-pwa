@@ -7,10 +7,10 @@ import AccountService from './services/AccountService';
 const LoginFormWithRouter = withRouter(LoginForm);
 class App extends Component {
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.state = {
-			isAuthenticated: AccountService.getApiKey() !== null
+			isAuthenticated: false
 		};
 		this.onLogin = this.onLogin.bind(this);
 	}
