@@ -11,9 +11,11 @@ class App extends Component {
 	render() {
 		return (
 			<div className="container">
-				<Router>
-					<Route path="/" component={Routes}/>
-				</Router>
+				<div className="row">
+					<Router>
+						<Route path="/" component={Routes}/>
+					</Router>
+				</div>
 			</div>
 		);
 	}
