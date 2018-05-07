@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import NewJournalNote from "./NewJournalNote";
 import JournalNote from "./JournalNote";
+import PatientService from "./services/PatientService";
+import JournalService from "./services/JournalService";
 
 const JournalList = (props) => {
 	return props.journals.map((journal, index) => {
@@ -11,31 +13,45 @@ const JournalList = (props) => {
 export default class Journals extends Component {
 	constructor(props) {
 		super(props);
+		this.patientId = this.props.match.params.number;
 		this.state = {
-			patient: {name: "foo", ssn: "1999-xxxxx"},
-			journals: [{id: "32asd", submittedAt: "2018-12-12", text: null}],
+			patient: {name: "", ssn: ""},
+			journals: [],
 			showNewNote: false
 		};
+
 		this.onToggleNewNote = this.onToggleNewNote.bind(this);
 		this.onNewNote = this.onNewNote.bind(this);
 		this.onReadNote = this.onReadNote.bind(this);
 	}
 
+	componentDidMount() {
+		Promise.all([PatientService.getPatient(this.patientId), PatientService.getJournals(this.patientId)])
+			.then((result) => {
+				this.setState({
+					patient: result[0],
+					journals: result[1]
+				});
+			});
+	}
+
 	onReadNote(index) {
-		let newJournals = this.state.journals.map((journal, i) => {
-			if(index === i) {
-				journal.text = "foo";
-				return Object.assign({}, journal);
-			}
-			return journal;
-		});
-		this.setState({journals :  newJournals});
+		let currentJournals = this.state.journals;
+		const journalId = currentJournals[index].id;
+		JournalService.getJournal(journalId)
+			.then((journal) => {
+				currentJournals[index] = journal;
+				this.setState({journals: currentJournals})
+			});
 	}
 
 	onNewNote(note) {
-		let currentJournals = this.state.journals;
-		currentJournals.push({id:"ddd", submittedAt: "2018-19-19", text: note});
-		this.setState({journals: currentJournals, showNewNote: false});
+		JournalService.createJournal({text: note, writtenAt: Date.now(), patientId: this.patientId})
+			.then((newJournal) => {
+				let currentJournals = this.state.journals;
+				currentJournals.push(newJournal);
+				this.setState({journals: currentJournals, showNewNote: false});
+			});
 	}
 
 	onToggleNewNote() {

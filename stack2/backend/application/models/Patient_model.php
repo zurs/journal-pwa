@@ -60,8 +60,8 @@ class Patient_model extends CI_Model {
         $result = $this->cassandra_client->run($query);
 
         $resultArray = [];
-        if(!$result){
-            return null;
+        if(!$result) {
+            return $resultArray;
         }
         foreach ($result as $res){
             $resultArray[] = Journal::parseFromDocument($res);
