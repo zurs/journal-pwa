@@ -14,7 +14,7 @@ export default class Journals extends Component {
 		super(props);
 		this.patientId = this.props.match.params.number;
 		this.state = {
-			patient: {name: "foo", ssn: "1999-xxxxx"},
+			patient: {name: "", ssn: ""},
 			journals: [],
 			showNewNote: false
 		};
@@ -25,11 +25,12 @@ export default class Journals extends Component {
 	}
 
 	componentDidMount() {
-		PatientService.getJournals(this.patientId)
-			.then((journals) => {
-				this.setState({journals: journals.map((journal) => {
-					return Object.assign({text: null}, journal);
-				})});
+		Promise.all([PatientService.getPatient(this.patientId), PatientService.getJournals(this.patientId)])
+			.then((result) => {
+				this.setState({
+					patient: result[0],
+					journals: result[1]
+				});
 			});
 	}
 

@@ -16,7 +16,20 @@ const PatientService = {
 				apiKey: AccountService.apiKey
 				}
 			}).then((response) => {
-				success(response.data)
+				success(response.data);
+			}).catch(() => {
+				fail("failed");
+			})
+		});
+	},
+	getPatient(patientId) {
+		return new Promise((success, fail) => {
+			Request.get('/' + patientId, {
+				params: {
+					apiKey: AccountService.apiKey
+				}
+			}).then((response) => {
+				success(response.data);
 			}).catch(() => {
 				fail("failed");
 			})
