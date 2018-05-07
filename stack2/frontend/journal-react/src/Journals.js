@@ -36,14 +36,13 @@ export default class Journals extends Component {
 	}
 
 	onReadNote(index) {
-		console.log(index);
-		let newJournals = this.state.journals.map((journal, i) => {
-			if(index === i) {
-				return Object.assign({}, journal);
-			}
-			return journal;
-		});
-		this.setState({journals :  newJournals});
+		let currentJournals = this.state.journals;
+		const journalId = currentJournals[index].id;
+		JournalService.getJournal(journalId)
+			.then((journal) => {
+				currentJournals[index] = journal;
+				this.setState({journals: currentJournals})
+			});
 	}
 
 	onNewNote(note) {
