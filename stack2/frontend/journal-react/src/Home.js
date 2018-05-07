@@ -11,8 +11,8 @@ class Home extends Component {
 	render(){
 		return (
 			<Switch>
-				<Route path = "/home" component={PatientList}/>
-				<Route path = "/journals/:number" component={Journals}/>
+				<Route exact path = "/" component={PatientList}/>
+				<Route path = "/patient/:number" component={Journals}/>
 			</Switch>
 
 		);

@@ -1,40 +1,33 @@
 import axios from 'axios';
 
+
+const Request = axios.create({
+	baseURL: 'http://localhost/stack2/account',
+	headers: {
+		'Content-Type': 'application/json'
+	}
+});
+
+let apiKey = null;
 const AccountService = {
-
-	URL: 'http://localhost/stack2',
-	apiKey: null,
-	instance: axios.create({
-		baseURL: this.URL,
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}),
-	authenticationState: {
-		subscribers: [],
-		subscribe(fun){
-			this.subscribers.push(fun);
-		},
-		updateState(newState){
-			this.subscribers.forEach((item) => {
-				item(newState);
+	login(username, password) {
+		return new Promise((success, fail) => {
+			Request.post('/login', {username: username, password: password})
+				.then((response) => {
+					apiKey = response.data.apiKey;
+					localStorage.setItem('apiKey', apiKey);
+					success();
+			}).catch(() => {
+				fail("failed");
 			});
-		}
-	},
-
-	authenticate(username, password, onSuccess){
-		let url = this.URL + '/account/login';
-		this.instance.post(url, {
-			username: username,
-			password: password
-		}).then(response => {
-				this.apiKey = response.data.apiKey;
-				onSuccess();
-				this.authenticationState.updateState(true);
-		}).catch(error => {
-			console.log(error);
 		});
 	},
+	getApiKey() {
+		if(apiKey === null) {
+			apiKey = localStorage.getItem('apiKey');
+		}
+		return apiKey;
+	}
 };
 
 export default AccountService;

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import AccountService from './services/AccountService';
 
 export default class LoginForm extends Component {
 
@@ -18,9 +17,7 @@ export default class LoginForm extends Component {
 		e.preventDefault();
 		let username = this.state.username;
 		let password = this.state.password;
-		AccountService.authenticate(username, password, () => {
-			this.props.history.push('/home');
-		});
+		this.props.onLogin(username, password);
 	}
 
 	usernameChange(e){

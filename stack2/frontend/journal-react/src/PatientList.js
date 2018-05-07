@@ -8,7 +8,7 @@ const PatientRows = (props) => {
 			<tr>
 				<td>{patient.name}</td>
 				<td>{patient.ssn}</td>
-				<td><Link className={'btn btn-primary'} to={`/journals/${patient.id}`}>Läs Journal</Link></td>
+				<td><Link className={'btn btn-primary'} to={`/patient/${patient.id}`}>Läs Journal</Link></td>
 			</tr>
 		);});
 };

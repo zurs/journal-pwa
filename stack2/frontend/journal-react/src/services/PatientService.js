@@ -13,7 +13,7 @@ const PatientService = {
 		return new Promise((success, fail) => {
 			Request.get('', {
 				params: {
-				apiKey: AccountService.apiKey
+				apiKey: AccountService.getApiKey()
 				}
 			}).then((response) => {
 				success(response.data);
@@ -26,7 +26,7 @@ const PatientService = {
 		return new Promise((success, fail) => {
 			Request.get('/' + patientId, {
 				params: {
-					apiKey: AccountService.apiKey
+					apiKey: AccountService.getApiKey()
 				}
 			}).then((response) => {
 				success(response.data);
@@ -39,7 +39,7 @@ const PatientService = {
 		return new Promise((success, fail) => {
 			Request.get('/' + patientId + '/journals', {
 				params: {
-					apiKey: AccountService.apiKey
+					apiKey: AccountService.getApiKey()
 				}
 			}).then((response) => {
 				success(response.data);
