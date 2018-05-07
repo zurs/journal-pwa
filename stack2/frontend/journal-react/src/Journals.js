@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import NewJournalNote from "./NewJournalNote";
 import JournalNote from "./JournalNote";
 import PatientService from "./services/PatientService";
+import JournalService from "./services/JournalService";
 
 const JournalList = (props) => {
 	return props.journals.map((journal, index) => {
@@ -35,6 +36,7 @@ export default class Journals extends Component {
 	}
 
 	onReadNote(index) {
+		console.log(index);
 		let newJournals = this.state.journals.map((journal, i) => {
 			if(index === i) {
 				return Object.assign({}, journal);
@@ -45,9 +47,12 @@ export default class Journals extends Component {
 	}
 
 	onNewNote(note) {
-		let currentJournals = this.state.journals;
-		currentJournals.push({id:"ddd", submittedAt: "2018-19-19", text: note});
-		this.setState({journals: currentJournals, showNewNote: false});
+		JournalService.createJournal({text: note, writtenAt: Date.now(), patientId: this.patientId})
+			.then((newJournal) => {
+				let currentJournals = this.state.journals;
+				currentJournals.push(newJournal);
+				this.setState({journals: currentJournals, showNewNote: false});
+			});
 	}
 
 	onToggleNewNote() {
