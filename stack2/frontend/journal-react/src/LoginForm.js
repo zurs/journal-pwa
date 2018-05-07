@@ -3,7 +3,7 @@ import AccountService from './services/AccountService';
 
 export default class LoginForm extends Component {
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.state = {
 			username: '',
@@ -12,7 +12,6 @@ export default class LoginForm extends Component {
 		this.loginSubmit    = this.loginSubmit.bind(this);
 		this.usernameChange = this.usernameChange.bind(this);
 		this.passwordChange = this.passwordChange.bind(this);
-		//console.log(this.props);
 	}
 
 	loginSubmit(e){
@@ -22,7 +21,6 @@ export default class LoginForm extends Component {
 		AccountService.authenticate(username, password, () => {
 			this.props.history.push('/home');
 		});
-
 	}
 
 	usernameChange(e){
