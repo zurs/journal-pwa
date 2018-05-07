@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PatientService from './services/PatientService';
-import {Link, Redirect} from "react-router-dom";
+import {Link} from "react-router-dom";
 import AccountService from "./services/AccountService";
 
 const PatientRows = (props) => {
@@ -32,7 +32,7 @@ export default class Patients extends Component {
 
 	onLogout() {
 		AccountService.logout();
-		Redirect('/');
+		this.props.history.push('/login');
 	}
 
 	render() {
