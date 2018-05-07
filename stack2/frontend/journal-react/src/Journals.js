@@ -12,6 +12,7 @@ const JournalList = (props) => {
 export default class Journals extends Component {
 	constructor(props) {
 		super(props);
+		this.patientId = this.props.match.params.number;
 		this.state = {
 			patient: {name: "foo", ssn: "1999-xxxxx"},
 			journals: [],
@@ -24,8 +25,7 @@ export default class Journals extends Component {
 	}
 
 	componentDidMount() {
-		const patientId = this.props.match.params.number;
-		PatientService.getJournals(patientId)
+		PatientService.getJournals(this.patientId)
 			.then((journals) => {
 				this.setState({journals: journals.map((journal) => {
 					return Object.assign({text: null}, journal);
