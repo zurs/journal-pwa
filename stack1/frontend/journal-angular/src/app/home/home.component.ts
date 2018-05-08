@@ -20,6 +20,9 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.updatePatientList();
+  }
+  private updatePatientList() {
     this.patientService.getPatients().subscribe((patients) => {
       this.patients = patients;
     });
@@ -31,7 +34,10 @@ export class HomeComponent implements OnInit {
   }
 
   onSyncPatientJournals(id: string) {
-    this.patientService.syncPatient(id);
+    this.patientService.syncPatient(id).subscribe(newData => {
+      console.log('Local database have changed');
+      this.updatePatientList();
+    });
   }
 
   onUnsyncPatientJournals() {

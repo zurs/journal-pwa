@@ -22,28 +22,35 @@ export class JournalService {
 
     const jo = new Observable<JournalModel[]>(observable => {
       this.localDbService.getPatients()
-        .then((response) => {
+        .subscribe((response) => {
           const doesExist = response.find((patient: PatientModel) => {
             if (patient.id === patientId && patient.localyStored) {
               return true;
             }
             return false;
           });
-          let theObservable: Observable<JournalModel[]>;
+
           if (doesExist) {
-            theObservable = this.localDbService.getPatientJournals(patientId);
+            console.log('Getting the journals from local database');
+            this.localDbService.getPatientJournals(patientId).subscribe(data => {
+              console.log(data);
+              observable.next(data);
+            });
           } else {
-            theObservable = this.http.get<JournalModel[]>(url);
+            console.log('Getting the journals from the server');
+            this.http.get<JournalModel[]>(url).subscribe(data => {
+              observable.next(data);
+            });
           }
-          return theObservable.pipe(
-            tap(journals => {
-              journals.forEach(note => {
-                note.submittedAt = String(+note.submittedAt * 1000);
-              });
-            }));
         });
     });
-    return jo;
+    return jo.pipe(
+      tap(journals => {
+        journals.forEach(note => {
+          console.log('Trying to convert here: ' + note);
+          note.submittedAt = String(+note.submittedAt * 1000);
+        });
+      }));
   }
 
   public getJournal(id: string) {

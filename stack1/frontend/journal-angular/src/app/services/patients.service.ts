@@ -27,7 +27,7 @@ export class PatientsService {
 
     return this.http.get<PatientModel[]>(url).pipe(
       tap((serverPatients) => {
-        this.localDbService.getPatients().then((localPatients) => {
+        this.localDbService.getPatients().subscribe((localPatients) => {
           serverPatients.forEach(patient => {
             const isLocal = localPatients.find((localPatient) => {
               return patient.id === localPatient.id;
@@ -46,13 +46,14 @@ export class PatientsService {
     return this.http.get<PatientModel>(url).pipe(
       tap(patient => {
         this.journalService.getPatientJournals(patient.id).subscribe(journals => {
+          console.log('Journals: ', journals);
           patient.journals = journals;
         });
       })
     );
   }
 
-  public syncPatient(id: string) {
-    this.localDbService.syncPatient(id);
+  public syncPatient(id: string): Observable<any> {
+    return this.localDbService.syncPatient(id);
   }
 }
