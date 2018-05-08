@@ -17,6 +17,7 @@ class Patient_controller extends CI_Controller {
 
 		$this->load->model('journal_model');
 		$this->load->model('patient_model');
+		$this->load->model('log_model');
 	}
 
 	public function create(){
@@ -59,8 +60,19 @@ class Patient_controller extends CI_Controller {
 		$this->jsonresponse->Ok($journals);
 	}
 
-	public function sync($ıd) {
-
+	public function sync($id) {
+		$patient = $this->patient_model->getById($id);
+		if($patient == null) {
+			$this->jsonresponse->Error("", 404);
+		}
+		$journals = $this->journal_model->getByPatientId($id);
+		foreach($journals AS $journal) {
+			$log = new Log();
+			$log->journalId = $journal->id;
+			$log->readerId 	= $this->getCurrentAccount()->id;
+			$this->log_model->create($log);
+		}
+		$this->jsonresponse->Ok(['patient' => $patient, 'journals' => $journals]);
 	}
 
 }
