@@ -24,7 +24,7 @@ class Current_account {
             $this->apiKey   = $account->apiKey;
         }
         else {
-            // Return HTTP 400
+            $this->json_response->Error('Autentisiering nekad.');
         }
     }
 
