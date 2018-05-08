@@ -60,7 +60,7 @@ class Patient_controller extends CI_Controller {
 		$this->jsonresponse->Ok($journals);
 	}
 
-	public function sync($id) {
+	public function store($id) {
 		$patient = $this->patient_model->getById($id);
 		if($patient == null) {
 			$this->jsonresponse->Error("", 404);
@@ -74,5 +74,4 @@ class Patient_controller extends CI_Controller {
 		}
 		$this->jsonresponse->Ok(['patient' => $patient, 'journals' => $journals]);
 	}
-
 }

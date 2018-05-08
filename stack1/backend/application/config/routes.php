@@ -64,4 +64,4 @@ $route['patient']['post'] 					= 'patient_controller/create';
 $route['patient/(:any)']['get']				= 'patient_controller/get/$1';
 $route['patient']['get']					= 'patient_controller/getAll';
 $route['patient/(:any)/journals']['get']	= 'patient_controller/getJournals/$1';
-$route['patient/(:any)/sync']['get']		= 'patient_controller/sync/$1';
+$route['patient/(:any)/store']['get']		= 'patient_controller/store/$1';
