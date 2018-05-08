@@ -43,6 +43,24 @@ class Replication_model extends CI_Model {
 		return $result;
 	}
 
+	public function delete(Patient $patient, Account $account) {
+		$row = $this->getById($patient->id);
+		$row->removeAccount($account->id);
+
+		$oldPrefix = $this->couch_client->databasePrefix;
+		$this->couch_client->databasePrefix = $account->username;
+
+		$storedPatient 	= $this->patient_model->getById($patient->id);
+		$storedJournals = $this->journal_model->getByPatientId($patient->id);
+		$this->patient_model->delete($storedPatient);
+		foreach($storedJournals AS $journal) {
+			$this->journal_model->delete($journal);
+		}
+		$this->couch_client->databasePrefix = $oldPrefix;
+		$client = $this->couch_client->getMasterClient('_replicated_patients');
+		return $this->couch_client->upsert($row, $client) !== null;
+	}
+
 	public function getById(string $patientId) : ?ReplicationRow {
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
 		$row = $this->couch_client->getById($patientId, ReplicationRow::class, $client);
@@ -63,6 +81,15 @@ class ReplicationRow {
 			$formatted = json_decode($this->accounts);
 		}
 		return $formatted;
+	}
+
+	public function removeAccount(string $accountId) {
+		$accounts = $this->getAccounts();
+		$key = array_search($accountId, $accounts);
+		if($key !== false) {
+			unset($accounts[$key]);
+			$this->accounts = json_encode($accounts);
+		}
 	}
 
 	public function addAccount(string $accountId) {

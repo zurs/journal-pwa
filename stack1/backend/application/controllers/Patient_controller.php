@@ -62,7 +62,7 @@ class Patient_controller extends CI_Controller {
 		$this->jsonresponse->Ok($journals);
 	}
 
-	public function store($id) {
+	public function create_store($id) {
 		$patient = $this->patient_model->getById($id);
 		$account = $this->getCurrentAccount();
 		if($patient === null) {
@@ -81,5 +81,19 @@ class Patient_controller extends CI_Controller {
 			$this->jsonresponse->Error("", 500);
 		}
 		$this->jsonresponse->Ok(['patients' => $db."_patients", 'journals' => $db."_journals"]);
+	}
+
+	public function delete_store($id) {
+		$patient = $this->patient_model->getById($id);
+		$account = $this->getCurrentAccount();
+		if($patient === null) {
+			$this->jsonresponse->Error("", 404);
+		}
+		$result = $this->replication_model->delete($patient, $account);
+
+		if($result) {
+			$this->jsonresponse->Ok();
+		}
+		$this->jsonresponse->Error("", 500);
 	}
 }

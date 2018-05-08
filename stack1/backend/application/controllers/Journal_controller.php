@@ -36,7 +36,6 @@ class Journal_controller extends CI_Controller {
 			$this->jsonresponse->Error("patient does not exist");
 		}
 
-
 		$returnJournal = $this->journal_model->create($journal);
 		if($returnJournal === null) {
 			$this->jsonresponse->Error();

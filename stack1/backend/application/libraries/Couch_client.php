@@ -111,6 +111,16 @@ class Couch_client {
 		return $parsableObject;
 	}
 
+	public function delete($parsableObject, CouchClient $client) {
+		try {
+			$doc = CouchHelper\parseToDocument($parsableObject);
+			$response = $client->deleteDoc($doc);
+		} catch(Exception $e) {
+			$response = null;
+		}
+		return $response !== null;
+	}
+
 	public function getById(string $id, string $class, CouchClient $client) {
 		try {
 			$doc = $client->getDoc($id);
