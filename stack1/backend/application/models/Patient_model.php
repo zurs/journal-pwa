@@ -16,17 +16,17 @@ class Patient_model extends CI_Model {
 	}
 
 	public function create(Patient $patient) {
-		$client = $this->couch_client->getMasterClient('test1_patients');
-		return $this->couch_client->upsert($patient, $client);
+		$client = $this->couch_client->getMasterClient('_patients');
+		return $this->couch_client->insert($patient, $client);
 	}
 
 	public function getById(string $id) {
-		$client = $this->couch_client->getMasterClient('test1_patients');
+		$client = $this->couch_client->getMasterClient('_patients');
 		return $this->couch_client->getById($id, Patient::class, $client);
 	}
 
 	public function getAll() : array {
-		$client = $this->couch_client->getMasterClient('test1_patients');
+		$client = $this->couch_client->getMasterClient('_patients');
 		$client->include_docs(true);
 		$docs = $client->getAllDocs();
 
