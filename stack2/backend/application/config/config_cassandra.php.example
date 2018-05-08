@@ -1,0 +1,14 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * Created by PhpStorm.
+ * User: eliasjohnsson
+ * Date: 2018-05-08
+ * Time: 09:24
+ */
+/*
+ * --- COPY FILE AND REMOVE .example ---
+ */
+$config['couchdb']['host'] 		= '127.0.0.1';
+$config['couchdb']['port'] 		= 9042;
+$config['couchdb']['keyspace'] 	= 'stack2';

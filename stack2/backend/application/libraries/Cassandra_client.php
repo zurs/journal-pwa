@@ -11,9 +11,10 @@ class Cassandra_client {
 
 
 	public function __construct() {
-	    $host = "127.0.0.1";
-	    $port = 9042;
-	    $keyspace = "stack2";
+        $ci = &get_instance();
+	    $host       = $ci->config->item('host', 'cassandra');
+	    $port       = $ci->config->item('port', 'cassandra');
+	    $keyspace   = $ci->config->item('keyspace', 'cassandra');
 
         $cluster = Cassandra::cluster()
             ->withContactPoints($host)
