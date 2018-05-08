@@ -59,4 +59,8 @@ class Patient_controller extends CI_Controller {
 		$this->jsonresponse->Ok($journals);
 	}
 
+	public function sync($ıd) {
+
+	}
+
 }
