@@ -40,4 +40,5 @@ class Account_controller extends CI_Controller{
 		}
 		$this->jsonresponse->Error("Could not create");
 	}
+
 }

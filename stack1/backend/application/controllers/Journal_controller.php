@@ -19,6 +19,7 @@ class Journal_controller extends CI_Controller {
 		$this->load->model('journal_model');
 		$this->load->model('account_model');
 		$this->load->model('log_model');
+		$this->load->model('replication_model');
 	}
 
 	public function create() {
@@ -40,7 +41,14 @@ class Journal_controller extends CI_Controller {
 		if($returnJournal === null) {
 			$this->jsonresponse->Error();
 		}
-
+		$replicationRow = $this->replication_model->getById($patient->id);
+		if($replicationRow !== null) {
+			$accounts = $replicationRow->getAccounts();
+			foreach($accounts AS $accountId) {
+				$account = $this->account_model->getById($accountId);
+				$this->replication_model->create($patient, $account, [$journal]);
+			}
+		}
 		$this->jsonresponse->Ok($returnJournal);
 	}
 

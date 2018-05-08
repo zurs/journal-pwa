@@ -4,6 +4,7 @@ use PHPOnCouch\CouchClient;
 
 class Couch_client {
 	private $clients;
+	public $databasePrefix = "test1";
 	public function __construct(){
 		$this->clients = [
 			'master' => [],
@@ -17,6 +18,8 @@ class Couch_client {
 		$cfgPort 		= $ci->config->item('port', 'couchdb');
 		$cfgUser 		= $ci->config->item('user', 'couchdb');
 		$cfgPassword	= $ci->config->item('password', 'couchdb');
+
+		$database = $this->databasePrefix.$database;
 
 		if(key_exists($database, $this->clients)) {
 			return $this->clients['master'][$database];
@@ -42,18 +45,60 @@ class Couch_client {
 		return $client;
 	}
 
+	public function update($parsableObject, CouchClient $client) {
+		$response = null;
+		try {
+			$doc = CouchHelper\parseToDocument($parsableObject);
+			$response = $client->storeDoc($doc);
+		} catch(Exception $e) {
+			$response = null;
+		}
+
+		if($response !== null) {
+			$parsableObject->id = $response->id;
+		}
+		else {
+			$parsableObject = null;
+		}
+
+		return $parsableObject;
+	}
+
+
 
 	public function upsert($parsableObject, CouchClient $client) {
 		$response = null;
 		try {
-			$doc = CouchHelper\parseToDocument($parsableObject, isset($parseableObject->id));
+			$doc = CouchHelper\parseToDocument($parsableObject);
 			$response = $client->storeDoc($doc);
 		} catch(Exception $e) {
 			$response = null;
 		}
 
 		if($parsableObject->id){
-			$parsableObject->rev = $response->rev;
+			if(isset($response->rev)) {
+				$parsableObject->rev = $response->rev;
+			}
+		}
+
+		if($response !== null) {
+			$parsableObject->id = $response->id;
+		}
+		else {
+			$parsableObject = null;
+		}
+
+		return $parsableObject;
+	}
+
+	public function insert($parsableObject, CouchClient $client) {
+		$response = null;
+		try {
+			$doc = CouchHelper\parseToDocument($parsableObject);
+			unset($doc->_rev);
+			$response = $client->storeDoc($doc);
+		} catch(Exception $e) {
+			$response = null;
 		}
 
 		if($response !== null) {
