@@ -12,14 +12,14 @@ class Log_model extends CI_Model {
 		parent::__construct();
 	}
 
-	public function create(Log $log): Log {
-		$client = $this->couch_client->getMasterClient('test1_logs');
+	public function create(Log $log): ?Log {
+		$client = $this->couch_client->getMasterClient('_logs');
 		$log->readAt = time();
-		return $this->couch_client->upsert($log, $client);
+		return $this->couch_client->insert($log, $client);
 	}
 
 	public function getByJournalId($journalId) : array {
-		$client = $this->couch_client->getMasterClient('test1_logs');
+		$client = $this->couch_client->getMasterClient('_logs');
 		return $this->couch_client->getBySelector(['journalId' => $journalId], Log::class, $client);
 	}
 }

@@ -19,18 +19,18 @@ class Account_model extends CI_Model{
 
 		$account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
-		$client = $this->couch_client->getMasterClient('test1');
-		return $this->couch_client->upsert($account, $client);
+		$client = $this->couch_client->getMasterClient('');
+		return $this->couch_client->insert($account, $client);
 
 	}
 
 	public function update(Account $account) : bool {
-		$client = $this->couch_client->getMasterClient('test1');
-		return $this->couch_client->upsert($account, $client) !== null;
+		$client = $this->couch_client->getMasterClient('');
+		return $this->couch_client->update($account, $client) !== null;
 	}
 	
 	public function getByUsername(string $username) {
-		$client = $this->couch_client->getMasterClient('test1');
+		$client = $this->couch_client->getMasterClient('');
 		return $this->couch_client->getBySelector(['username' => $username], Account::class, $client, 1);
 	}
 
@@ -53,16 +53,14 @@ class Account_model extends CI_Model{
 			return null;
 		}
 
-		$client = $this->couch_client->getMasterClient('test1');
+		$client = $this->couch_client->getMasterClient('');
 		return $this->couch_client->getBySelector(['apiKey' => $apiKey], Account::class, $client, 1);
 	}
 
 	public function getById(string $id) {
-		$client = $this->couch_client->getMasterClient('test1');
+		$client = $this->couch_client->getMasterClient('');
 		return $this->couch_client->getById($id, Account::class, $client);
 	}
-
-
 }
 
 class Account {

@@ -14,19 +14,19 @@ class Journal_model extends CI_Model {
 		$this->load->library('couch_client');
 	}
 
-	public function create(Journal $journal): Journal {
-		$client = $this->couch_client->getMasterClient('test1_journals');
+	public function create(Journal $journal): ?Journal {
+		$client = $this->couch_client->getMasterClient('_journals');
 		$journal->submittedAt = time();
-		return $this->couch_client->upsert($journal, $client);
+		return $this->couch_client->insert($journal, $client);
 	}
 
 	public function getById(string $id) {
-		$client = $this->couch_client->getMasterClient('test1_journals');
+		$client = $this->couch_client->getMasterClient('_journals');
 		return $this->couch_client->getById($id, Journal::class, $client);
 	}
 
 	public function getByPatientId(string $patientId) : array {
-		$client = $this->couch_client->getMasterClient('test1_journals');
+		$client = $this->couch_client->getMasterClient('_journals');
 		return $this->couch_client->getBySelector(['patientId' => $patientId], Journal::class, $client);
 	}
 }

@@ -7,7 +7,7 @@
  */
 
 namespace CouchHelper {
-	function parseToDocument($object, $update = false) : \stdClass {
+	function parseToDocument($object) : \stdClass {
 
 		if(!(array_key_exists(ParsableToCouch::class, class_uses($object)))) {
 			throw new \Exception('$object must use ParsableToCouch');
@@ -26,8 +26,10 @@ namespace CouchHelper {
 		unset($parsedObject->id);
 		unset($parsedObject->rev);
 
-		if($update) {
+		if($id !== null) {
 			$parsedObject->_id = $id;
+		}
+		if($rev !== null) {
 			$parsedObject->_rev = $rev;
 		}
 
