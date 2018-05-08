@@ -5,6 +5,7 @@ import {tap} from 'rxjs/operators';
 import {Observable} from 'rxjs/Observable';
 import {PatientModel} from '../models/patient.model';
 import {JournalService} from './journal.service';
+import {LocalDbService} from './localDb.service';
 
 
 @Injectable()
@@ -12,17 +13,30 @@ export class PatientsService {
 
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
 
+
   constructor(
     private http: HttpClient,
     private accService: AccountService,
-    private journalService: JournalService) {
+    private journalService: JournalService,
+    private localDbService: LocalDbService) {
   }
 
   public getPatients(): Observable<PatientModel[]> {
     const apiKey = this.accService.getApiKey();
+    const url = this.SERVER_URL + '/patient?apiKey=' + apiKey;
 
-    const url = this.SERVER_URL + '/patient?apiKey=' + this.accService.getApiKey();
-    return this.http.get<PatientModel[]>(url);
+    return this.http.get<PatientModel[]>(url).pipe(
+      tap((serverPatients) => {
+        this.localDbService.getPatients().then((localPatients) => {
+          serverPatients.forEach(patient => {
+            const isLocal = localPatients.find((localPatient) => {
+              return patient.id === localPatient.id;
+            });
+            patient.localyStored = !!isLocal;
+          });
+        });
+      })
+    );
   }
 
   public getPatient(id: string) {
@@ -38,4 +52,7 @@ export class PatientsService {
     );
   }
 
+  public syncPatient(id: string) {
+    this.localDbService.syncPatient(id);
+  }
 }

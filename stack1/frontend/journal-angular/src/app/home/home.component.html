@@ -12,7 +12,12 @@
   <tr *ngFor="let patient of patients">
     <td>{{patient.name}}</td>
     <td>{{patient.ssn}}</td>
-    <td><button class="btn btn-primary btn-sm right" routerLink="/patient/{{patient.id}}">Läs journal</button></td>
+    <td>
+      <button class="btn btn-primary btn-sm right" routerLink="/patient/{{patient.id}}">Läs journal</button>
+
+      <button *ngIf="!patient.localyStored" class="btn btn-warning btn-sm right" (click)="onSyncPatientJournals(patient.id)">Spara lokalt</button>
+      <button *ngIf="patient.localyStored" class="btn btn-danger btn-sm right" (click)="onUnsyncPatientJournals(patient.id)">Ta bort lokalt</button>
+    </td>
   </tr>
   </tbody>
 </table>

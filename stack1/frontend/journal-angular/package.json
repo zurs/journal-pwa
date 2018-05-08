@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "pwa" : "ng build --prod && cd dist && http-server -p 8080",
+    "pwa": "ng build --prod && cd dist && http-server -p 8080",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
@@ -24,6 +24,8 @@
     "@angular/router": "^5.2.0",
     "@angular/service-worker": "^5.2.0",
     "core-js": "^2.4.1",
+    "pouchdb": "^6.4.3",
+    "pouchdb-find": "^6.4.3",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },

@@ -3,6 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {JournalModel} from '../models/journal.model';
 import {tap} from 'rxjs/operators';
 import {AccountService} from './account.service';
+import {LocalDbService} from './localDb.service';
+import {Observable} from 'rxjs/Observable';
+import {PatientModel} from '../models/patient.model';
 
 
 @Injectable()
@@ -10,15 +13,37 @@ export class JournalService {
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
 
   constructor(private http: HttpClient,
-              private accService: AccountService) { }
+              private accService: AccountService,
+              private localDbService: LocalDbService) {
+  }
 
-  public getPatientJournals(patientId: string) {
+  public getPatientJournals(patientId: string): Observable<JournalModel[]> {
     const url = this.SERVER_URL + '/patient/' + patientId + '/journals?apiKey=' + this.accService.getApiKey();
-    return this.http.get<JournalModel[]>(url).pipe(
-      tap(journals => {
-        journals.forEach(note => { note.submittedAt = String(+note.submittedAt * 1000); });
-      })
-    );
+
+    const jo = new Observable<JournalModel[]>(observable => {
+      this.localDbService.getPatients()
+        .then((response) => {
+          const doesExist = response.find((patient: PatientModel) => {
+            if (patient.id === patientId && patient.localyStored) {
+              return true;
+            }
+            return false;
+          });
+          let theObservable: Observable<JournalModel[]>;
+          if (doesExist) {
+            theObservable = this.localDbService.getPatientJournals(patientId);
+          } else {
+            theObservable = this.http.get<JournalModel[]>(url);
+          }
+          return theObservable.pipe(
+            tap(journals => {
+              journals.forEach(note => {
+                note.submittedAt = String(+note.submittedAt * 1000);
+              });
+            }));
+        });
+    });
+    return jo;
   }
 
   public getJournal(id: string) {

@@ -20,16 +20,22 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.patientService.getPatients().subscribe((response) => {
-      response.forEach(patientJson => {
-        this.patients.push(PatientModel.parseFromJson(patientJson));
-      });
+    this.patientService.getPatients().subscribe((patients) => {
+      this.patients = patients;
     });
   }
 
   onLogoutClicked() {
     this.accService.logout();
     this.router.navigate(['login']);
+  }
+
+  onSyncPatientJournals(id: string) {
+    this.patientService.syncPatient(id);
+  }
+
+  onUnsyncPatientJournals() {
+
   }
 
 }
