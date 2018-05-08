@@ -75,15 +75,10 @@ class Patient_controller extends CI_Controller {
 			$log->readerId 	= $account->id;
 			$this->log_model->create($log);
 		}
+		$db = $this->replication_model->create($patient, $account, $journals);
 
-		$db = $this->replication_model->createReplicationDatabase($patient, $account);
 		if($db === null) {
 			$this->jsonresponse->Error("", 500);
-		}
-		$this->patient_model->create($patient);
-
-		foreach($journals AS $journal) {
-			$this->journal_model->create($journal);
 		}
 		$this->jsonresponse->Ok(['patients' => $db."_patients", 'journals' => $db."_journals"]);
 	}

@@ -10,27 +10,37 @@ class Replication_model extends CI_Model {
 	public function __construct() {
 		$this->load->library('couch_client');
 		$this->load->model('patient_model');
+		$this->load->model('journal_model');
 		$this->load->model('account_model');
+		$this->load->model('log_model');
 	}
 
-	public function createReplicationDatabase(Patient $patient, Account $account) : ?string {
+	public function create(Patient $patient, Account $account, array $journals) : ?string {
 		$row = $this->getById($patient->id);
 		if($row === null) {
 			$row = new ReplicationRow();
 			$row->id = $patient->id;
 		}
 		$row->addAccount($account->id);
+
 		// Create dbs
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
+		$oldPrefix = $this->couch_client->databasePrefix;
 		$this->couch_client->databasePrefix = $account->username;
 		$createdPatients 	= $this->couch_client->getMasterClient("_patients", true);
 		$createdJournals 	= $this->couch_client->getMasterClient("_journals", true);
-
 		$addedRow = $this->couch_client->upsert($row, $client);
+
+		$result = null;
 		if($addedRow && $createdJournals && $createdPatients) {
-			return $account->username;
+			$this->patient_model->create($patient);
+			foreach($journals AS $journal) {
+				$this->journal_model->create($journal);
+			}
+			$result = $account->username;
 		}
-		return null;
+		$this->couch_client->databasePrefix = $oldPrefix;
+		return $result;
 	}
 
 	public function getById(string $patientId) : ?ReplicationRow {
