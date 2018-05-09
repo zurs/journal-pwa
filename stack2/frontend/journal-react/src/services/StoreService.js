@@ -2,43 +2,55 @@ import PatientService from "./PatientService";
 import JournalService from "./JournalService";
 
 const StoreService = {
+	getJournals(patientId) {
+		return new Promise((success) => {
+			const journalIds = [];
+			Object.keys(localStorage).forEach((key) => {
+				const keySplit = key.split('/');
+				if(keySplit.length === 4 && keySplit[1] === patientId) {
+					journalIds.push(keySplit[3]);
+				}
+			});
+
+			const promises = journalIds.map((journalId) => {
+				return this.getJournal(journalId);
+			});
+
+			Promise.all(promises).then((journals) => {
+				journals = journals.map((journal) => {
+					journal.text = null;
+					journal.writtenAt = null;
+					journal.authorId = null;
+					return journal;
+				});
+				success(journals);
+			});
+		});
+	},
 	getJournal(journalId) {
 		return new Promise((success, fail) => {
-			const storedData = localStorage.getItem('journalId=' + journalId);
-			if(storedData === null)
+			const uri = Object.keys(localStorage).find((key) => {
+				const keySplit = key.split('/');
+				return keySplit.length === 4 && keySplit[3] === journalId;
+			});
+			if(uri === undefined) {
 				fail();
-			success(JSON.parse(storedData));
-		});
-	},
-	getLocalJournals() {
-		return new Promise((success) => {
-			const storageKeys = Object.keys(localStorage).filter((key) => {
-				const keySplit = key.split("=");
-				return keySplit[0] === 'localJournalId';
-			});
-			const journals = storageKeys.map((key) => {
-				const storedJournal = localStorage.getItem(key);
-				return JSON.parse(storedJournal);
-			});
-			success(journals);
-		});
-	},
-	createLocalJournal(journal) {
-		return new Promise((success) => {
-			localStorage.setItem('localJournalId='+journal.id, JSON.stringify(journal));
-			success();
+			} else {
+				const storedJournal = localStorage.getItem(uri);
+				success(JSON.parse(storedJournal));
+			}
 		});
 	},
 	createJournal(journal) {
 		return new Promise((success) => {
-			localStorage.setItem('journalId='+journal.id, JSON.stringify(journal));
+			localStorage.setItem('patient/'+journal.patientId+'/journal/'+journal.id, JSON.stringify(journal));
 			success();
 		});
 	},
 	createPatient(patient) {
 		return new Promise((success) => {
 			patient.offline = true;
-			localStorage.setItem('patientId=' + patient.id, JSON.stringify(patient));
+			localStorage.setItem('patient/' + patient.id, JSON.stringify(patient));
 			PatientService.getJournals(patient.id).then((journals) => {
 				const promises = journals.map((journal) => {
 					return JournalService.getJournal(journal.id);
@@ -56,28 +68,29 @@ const StoreService = {
 	},
 	getPatient(patientId) {
 		return new Promise((success, fail) => {
-			const storedData = localStorage.getItem('patientId=' + patientId);
-			if(storedData === null)
+			const storedData = localStorage.getItem('patient/' + patientId);
+			if(storedData === null) {
 				fail();
-			success(JSON.parse(storedData));
+			} else {
+				success(JSON.parse(storedData));
+			}
 		});
 	},
 	deletePatient(patientId) {
 		return new Promise((success) => {
-			localStorage.removeItem('patientId=' + patientId);
+			localStorage.removeItem('patient/' + patientId);
 			success();
 		});
 	},
 	getPatients() {
 		return new Promise((success) => {
-			const patientIds = Object.keys(localStorage).filter((key) => {
-					const keySplit = key.split("=");
-					return keySplit[0] === 'patientId';
-				}).map((key) => {
-					const keySplit = key.split("=");
-					return keySplit[1];
-				});
-
+			let patientIds = [];
+			Object.keys(localStorage).forEach((key) => {
+				const keySplit = key.split("/");
+				if(keySplit[0] === 'patient' && keySplit.length === 2) {
+					patientIds.push(keySplit[1]);
+				}
+			});
 			const promises = patientIds.map((patientId) => {
 				return this.getPatient(patientId).then((patient) => {
 					return patient;

@@ -53,15 +53,25 @@ const PatientService = {
 	},
 	getJournals(patientId) {
 		return new Promise((success) => {
+			let journals = [];
 			Request.get('/' + patientId + '/journals', {
 				params: {
 					apiKey: AccountService.getApiKey()
 				}
 			}).then((response) => {
-				success(response.data);
-			}).catch(() => {
-				success([]);
-			})
+				journals = response.data;
+			}).finally(() => {
+				StoreService.getJournals(patientId).then((stored) => {
+					journals = journals.filter((journal) => {
+						const isDuplicated = stored.some((store) => {
+							return store.id === journal.id;
+						});
+						return !isDuplicated;
+					});
+					const all = stored.concat(journals);
+					success(all);
+				});
+			});
 		});
 	}
 };
