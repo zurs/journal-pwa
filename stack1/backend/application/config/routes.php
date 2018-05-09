@@ -66,3 +66,5 @@ $route['patient']['get']					= 'patient_controller/getAll';
 $route['patient/(:any)/journals']['get']	= 'patient_controller/getJournals/$1';
 $route['patient/(:any)/store']['post']		= 'patient_controller/create_store/$1';
 $route['patient/(:any)/store']['delete']	= 'patient_controller/delete_store/$1';
+
+$route['log/sync']['post']					= 'log_controller/sync';
