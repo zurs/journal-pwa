@@ -40,7 +40,7 @@ class Journal_controller extends CI_Controller {
 		if($returnJournal === null) {
 			$this->jsonresponse->Error();
 		}
-		$this->replication_model->updateJournal($patient->id, $returnJournal);
+		$this->replication_model->createJournal($patient->id, $returnJournal);
 		$this->jsonresponse->Ok($returnJournal);
 	}
 
@@ -58,6 +58,7 @@ class Journal_controller extends CI_Controller {
 		if($result === null) {
 			$this->jsonresponse->Error();
 		}
+		$this->replication_model->createLog($journal->patientId, $result);
 
 		$this->jsonresponse->Ok($journal);
 	}

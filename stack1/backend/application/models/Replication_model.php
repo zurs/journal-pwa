@@ -62,26 +62,12 @@ class Replication_model extends CI_Model {
 		return $result;
 	}
 
-	public function updateJournal(string $patientId, Journal $journal) : bool {
-		$row 		= $this->getById($patientId);
-		if($row === null) {
-			return true;
-		}
+	public function createJournal(string $patientId, Journal $journal) : bool {
+		return $this->_create($patientId, $this->journal_model, $journal);
+	}
 
-		$accountIds = $row->getAccounts();
-		$accounts = [];
-		foreach($accountIds AS $accountId) {
-			$accounts[] = $this->account_model->getById($accountId);
-		}
-
-		$oldPrefix 	= $this->couch_client->databasePrefix;
-		$result = false;
-		foreach($accounts AS $account) {
-			$this->couch_client->databasePrefix = $account->username;
-			$result = $this->journal_model->create($journal) !== null;
-		}
-		$this->couch_client->databasePrefix = $oldPrefix;
-		return $result;
+	public function createLog(string $patientId, Log $log) : bool {
+		return $this->_create($patientId, $this->log_model, $log);
 	}
 
 	public function delete(string $patientId, string $accountId, string $db) : bool {
@@ -120,6 +106,29 @@ class Replication_model extends CI_Model {
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
 		$row = $this->couch_client->getById($patientId, ReplicationRow::class, $client);
 		return $row;
+	}
+
+	private function _create(string $patientId, CI_Model $model, $parsableObject) : bool {
+		$row = $this->getById($patientId);
+		if($row === null) {
+			return true;
+		}
+
+		$accountIds = $row->getAccounts();
+		$accounts = [];
+		foreach($accountIds AS $accountId) {
+			$accounts[] = $this->account_model->getById($accountId);
+		}
+
+		$oldPrefix 	= $this->couch_client->databasePrefix;
+		$result = false;
+
+		foreach($accounts AS $account) {
+			$this->couch_client->databasePrefix = $account->username;
+			$result = $model->create($parsableObject) !== null;
+		}
+		$this->couch_client->databasePrefix = $oldPrefix;
+		return $result;
 	}
 }
 
