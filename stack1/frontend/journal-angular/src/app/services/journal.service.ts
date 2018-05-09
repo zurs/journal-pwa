@@ -22,7 +22,7 @@ export class JournalService {
 
     const jo = new Observable<JournalModel[]>(observable => {
       this.localDbService.getPatients()
-        .subscribe((response) => {
+        .then((response) => {
           const doesExist = response.find((patient: PatientModel) => {
             if (patient.id === patientId && patient.localyStored) {
               return true;
@@ -32,10 +32,10 @@ export class JournalService {
 
           if (doesExist) {
             console.log('Getting the journals from local database');
-            this.localDbService.getPatientJournals(patientId).subscribe(data => {
-              console.log(data);
-              observable.next(data);
-            });
+            this.localDbService.getPatientJournals(patientId)
+              .then(data => {
+                observable.next(data);
+              });
           } else {
             console.log('Getting the journals from the server');
             this.http.get<JournalModel[]>(url).subscribe(data => {
@@ -47,7 +47,6 @@ export class JournalService {
     return jo.pipe(
       tap(journals => {
         journals.forEach(note => {
-          console.log('Trying to convert here: ' + note);
           note.submittedAt = String(+note.submittedAt * 1000);
         });
       }));
@@ -58,15 +57,16 @@ export class JournalService {
 
     return new Observable<JournalModel>(observer => {
 
-      this.localDbService.getPatientJournal(id).subscribe(journal => {
-        if (journal) {
-          observer.next(journal);
-        } else {
-          this.http.get<JournalModel>(url).subscribe(serverJournal => {
-            observer.next(serverJournal);
-          });
-        }
-      });
+      this.localDbService.getPatientJournal(id)
+        .then(journal => {
+          if (journal) {
+            observer.next(journal);
+          } else {
+            this.http.get<JournalModel>(url).subscribe(serverJournal => {
+              observer.next(serverJournal);
+            });
+          }
+        });
     }).pipe(
       tap(journal => {
         journal.submittedAt = String(+journal.submittedAt * 1000);

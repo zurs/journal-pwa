@@ -6,6 +6,7 @@ import {AccountService} from './account.service';
 import {PatientModel} from '../models/patient.model';
 import {Observable} from 'rxjs/Observable';
 import {JournalModel} from '../models/journal.model';
+import {Subject} from 'rxjs/Subject';
 
 PouchDB.plugin(PouchDBFind);
 
@@ -15,7 +16,8 @@ export class LocalDbService {
   private journalsDb: PouchDB;
   private remoteCouchServer = 'http://admin:admin@127.0.0.1:5984/';
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
-  private replicationActive = false;
+  public replicationActive = false;
+  public whenLocalPatientsChanges = new Subject();
 
   constructor(private http: HttpClient,
               private accService: AccountService) {
@@ -26,29 +28,20 @@ export class LocalDbService {
 
   }
 
-  public syncPatient(id: string): Observable<any> {
+  public syncPatient(id: string): Promise<any> {
     // syncDom.setAttribute('data-sync-state', 'syncing');
 
-    const returnObservable = new Observable<any>(observer => {
+    const returnObservable = new Promise<any>((resolve, reject) => {
       const url = this.SERVER_URL + '/patient/' + id + '/store';
       this.http.post<any>(url, {
         apiKey: this.accService.getApiKey()
-      })
-        .subscribe(response => {
-          console.log(this.replicationActive);
+      }).toPromise()
+        .then(response => {
           if (!this.replicationActive) {
-            const remotePatientsDb = this.remoteCouchServer + response.db + '_patients';
-            const remoteJournalsDb = this.remoteCouchServer + response.db + '_journals';
-            // Replicate patients
-            this.setupReplication(this.patientsDb, remotePatientsDb, ['_id']).subscribe(newData => {
-              observer.next(newData);
-            });
-            // ==================
-            // Replicate journals
-            this.setupReplication(this.journalsDb, remoteJournalsDb, ['_id', 'patientId']).subscribe(newData => {
-              console.log('New journals added');
-            });
-            this.replicationActive = true;
+            this.setupFullReplication(response.db)
+              .then(resolve);
+          } else {
+            resolve();
           }
         });
     });
@@ -58,12 +51,11 @@ export class LocalDbService {
 
   public unsyncPatient(id: string) {
     this.http.delete(this.SERVER_URL + '/patient/' + id + '/store?apiKey=' + this.accService.getApiKey()).subscribe(response => {
-      console.log('Patient is or is about to get unsynced');
     });
   }
 
-  public getPatients(): Observable<PatientModel[]> {
-    return new Observable<PatientModel[]>(observer => {
+  public getPatients(): Promise<PatientModel[]> {
+    return new Promise((resolve, reject) => {
       this.patientsDb.allDocs({include_docs: true})
         .then(data => {
           let returnArray = [];
@@ -81,31 +73,32 @@ export class LocalDbService {
               }
             });
           }
-          observer.next(returnArray);
+          resolve(returnArray);
         });
     });
   }
 
-  public getPatient(id: string): Observable<PatientModel> {
-    return new Observable<PatientModel>(observer => {
-      this.patientsDb.find({
-        selector: {
-          _id: id
-        }
-      }).then((result) => {
-        console.log(result);
-        if (typeof result.docs[0] !== 'undefined') {
-          observer.next(PatientModel.parsePouchObject(result.docs[0]));
-        } else {
-          observer.next(null);
-        }
-      });
+  public getPatient(id: string): Promise<PatientModel> {
+    return new Promise<PatientModel>((resolve, reject) => {
+      this.getPatients()
+        .then(patients => {
+          let foundPatient: PatientModel = null;
+          for (let i = 0; i < patients.length; i++) {
+            if (patients[i].id === id) {
+              foundPatient = patients[i];
+            }
+            if (foundPatient !== null) {
+              resolve(foundPatient);
+            } else {
+              reject(null);
+            }
+          }
+        });
     });
   }
 
-  public getPatientJournals(patientId: string): Observable<JournalModel[]> {
-    return new Observable<JournalModel[]>(observer => {
-      console.log(patientId);
+  public getPatientJournals(patientId: string): Promise<JournalModel[]> {
+    return new Promise<JournalModel[]>((resolve, reject) => {
       this.journalsDb.find({
         selector: {
           patientId: patientId
@@ -113,45 +106,58 @@ export class LocalDbService {
         fields: ['_id', 'submittedAt']
       })
         .then(result => {
-          console.log(result);
-          observer.next(JournalModel.parseArray(result.docs));
-          observer.complete();
+          resolve(JournalModel.parseArray(result.docs));
         });
     });
   }
 
-  public getPatientJournal(id: string): Observable<JournalModel> {
-    return new Observable<JournalModel>(observer => {
+  public getPatientJournal(id: string): Promise<JournalModel> {
+    return new Promise<JournalModel>((resolve, reject) => {
       this.journalsDb.find({
         selector: {
           '_id': id
         }
       })
         .then(result => {
-          console.log(result);
-          observer.next(JournalModel.parseObject(result.docs[0]));
-          observer.complete();
+          resolve(JournalModel.parseObject(result.docs[0]));
         });
     });
   }
 
-  private setupReplication(localDb: PouchDB, remoteAddress: string, indexFields: string[]): Observable<any> {
-    return new Observable<any>(observer => {
-      localDb.replicate.from(remoteAddress).on('complete', function (info) {
+  private setupReplication(localDb: PouchDB, remoteAddress: string, indexFields: string[], onChangeObservable: Subject<any> = null): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      localDb.replicate.from(remoteAddress).on('complete', (info) => {
         console.log('Full replication done from: ' + remoteAddress);
         localDb.createIndex({
           index: {fields: indexFields}
         });
-        observer.next(info);
+        resolve(info);
         localDb.sync(remoteAddress, {live: true, retry: true})
           .on('error', (errorMsg) => {
             console.log('Syncing error: ', errorMsg);
           })
           .on('change', newData => {
-            console.log('database changed.');
-            observer.next(newData);
+            if (onChangeObservable !== null) {
+              onChangeObservable.next(null);
+            }
           });
       });
+    });
+  }
+
+  private setupFullReplication(db: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const remotePatientsDb = this.remoteCouchServer + db + '_patients';
+      const remoteJournalsDb = this.remoteCouchServer + db + '_journals';
+      // Replicate patients
+      this.setupReplication(this.patientsDb, remotePatientsDb, ['_id'], this.whenLocalPatientsChanges)
+        .then(data => {
+          resolve();
+        });
+      // ==================
+      // Replicate journals
+      this.setupReplication(this.journalsDb, remoteJournalsDb, ['_id', 'patientId']);
+      this.replicationActive = true;
     });
   }
 }

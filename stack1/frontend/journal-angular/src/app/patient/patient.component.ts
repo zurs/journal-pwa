@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {PatientModel} from '../models/patient.model';
 import {JournalModel} from '../models/journal.model';
@@ -20,7 +20,8 @@ export class PatientComponent implements OnInit {
     private route: ActivatedRoute,
     private patientService: PatientsService,
     private journalService: JournalService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.loadPatient();
@@ -33,9 +34,10 @@ export class PatientComponent implements OnInit {
   private loadPatient() {
     this.route.paramMap.subscribe(params => {
       this.id = params.get('id');
-      this.patientService.getPatient(this.id).subscribe(patient => {
-        this.patient = patient;
-      });
+      this.patientService.getPatient(this.id)
+        .then(patient => {
+          this.patient = patient;
+        });
     });
   }
 
