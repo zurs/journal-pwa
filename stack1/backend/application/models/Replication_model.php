@@ -7,6 +7,7 @@
  */
 
 class Replication_model extends CI_Model {
+	const DB = 'replicated_patients';
 	public function __construct() {
 		$this->load->library('couch_client');
 		$this->load->model('patient_model');
@@ -15,58 +16,99 @@ class Replication_model extends CI_Model {
 		$this->load->model('log_model');
 	}
 
-	public function create(Patient $patient, Account $account, array $journals) : ?string {
-		$row = $this->getById($patient->id);
+	public function create(string $patientId, string $accountId, string $prefix) : bool {
+		$patient = $this->patient_model->getById($patientId);
+		if($patient === null) {
+			return false;
+		}
+		$journals = $this->journal_model->getByPatientId($patientId);
+
+		$logs  = [];
+		foreach($journals AS $journal) {
+			$l = $this->log_model->getByJournalId($journal->id);
+			$logs = array_merge($logs, $l);
+		}
+
+		$row = $this->getById($patientId);
 		if($row === null) {
 			$row = new ReplicationRow();
-			$row->id = $patient->id;
+			$row->id = $patientId;
 		}
-		$row->addAccount($account->id);
+		$row->addAccount($accountId);
 
+		$client 	= $this->couch_client->getMasterClient(self::DB);
 		// Create dbs
-		$client = $this->couch_client->getMasterClient('_replicated_patients');
-		$oldPrefix = $this->couch_client->databasePrefix;
-		$this->couch_client->databasePrefix = $account->username;
-		$createdPatients 	= $this->couch_client->getMasterClient("_patients", true);
-		$createdJournals 	= $this->couch_client->getMasterClient("_journals", true);
-		$addedRow = $this->couch_client->upsert($row, $client);
+		$this->couch_client->setPrefix($prefix);
 
-		$result = null;
+		$createdPatients 	= $this->couch_client->getMasterClient(Patient_model::DB, true);
+		$createdJournals 	= $this->couch_client->getMasterClient(Journal_model::DB, true);
+		$addedRow 			= $this->couch_client->upsert($row, $client);
+
+		$result = false;
 		if($addedRow && $createdJournals && $createdPatients) {
+			// Create documents
 			$this->patient_model->create($patient);
 			foreach($journals AS $journal) {
 				$this->journal_model->create($journal);
 			}
-			$result = $account->username;
+			$result = true;
 		}
-		$this->couch_client->databasePrefix = $oldPrefix;
+		$this->couch_client->resetPrefix();
 		return $result;
 	}
 
-	public function delete(Patient $patient, Account $account) {
-		$row = $this->getById($patient->id);
-		$row->removeAccount($account->id);
+	public function createJournal(string $patientId, Journal $journal) : bool {
+		$row = $this->getById($patientId);
+		if($row === null) {
+			return true;
+		}
 
-		$oldPrefix = $this->couch_client->databasePrefix;
-		$this->couch_client->databasePrefix = $account->username;
+		$accountIds = $row->getAccounts();
+		$accounts 	= [];
+		foreach($accountIds AS $accountId) {
+			$accounts[] = $this->account_model->getById($accountId);
+		}
+		$result 	= false;
 
-		$storedPatient 	= $this->patient_model->getById($patient->id);
-		$storedJournals = $this->journal_model->getByPatientId($patient->id);
-		$this->patient_model->delete($storedPatient);
-		foreach($storedJournals AS $journal) {
+		foreach($accounts AS $account) {
+			$this->couch_client->setPrefix($account->username);
+			$result = $this->journal_model->create($journal) !== null;
+		}
+		$this->couch_client->resetPrefix();
+		return $result;
+	}
+
+	public function delete(string $patientId, string $accountId, string $prefix) : bool {
+		$row = $this->getById($patientId);
+		if($row === null) {
+			return true;
+		}
+
+		$row->removeAccount($accountId);
+		$this->couch_client->setPrefix($prefix);
+
+		$patient 	= $this->patient_model->getById($patientId);
+		$journals 	= $this->journal_model->getByPatientId($patientId);
+
+		$this->patient_model->delete($patient);
+		foreach($journals AS $journal) {
 			$this->journal_model->delete($journal);
 		}
-		$this->couch_client->databasePrefix = $oldPrefix;
-		$client = $this->couch_client->getMasterClient('_replicated_patients');
+
+		$this->couch_client->resetPrefix();
+
+		$client = $this->couch_client->getMasterClient(self::DB);
+		$result = null;
+		$accounts = $row->getAccounts();
+		if(count($accounts) < 1) {
+			return $this->couch_client->delete($row, $client) !== null;
+		}
 		return $this->couch_client->upsert($row, $client) !== null;
 	}
 
 	public function getById(string $patientId) : ?ReplicationRow {
-		$client = $this->couch_client->getMasterClient('_replicated_patients');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		$row = $this->couch_client->getById($patientId, ReplicationRow::class, $client);
-		if($row === null) {
-			return null;
-		};
 		return $row;
 	}
 }
