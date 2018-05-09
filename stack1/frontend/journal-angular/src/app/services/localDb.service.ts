@@ -37,8 +37,8 @@ export class LocalDbService {
         .subscribe(response => {
           console.log(this.replicationActive);
           if (!this.replicationActive) {
-            const remotePatientsDb = this.remoteCouchServer + response.patients;
-            const remoteJournalsDb = this.remoteCouchServer + response.journals;
+            const remotePatientsDb = this.remoteCouchServer + response.db + '_patients';
+            const remoteJournalsDb = this.remoteCouchServer + response.db + '_journals';
             // Replicate patients
             this.setupReplication(this.patientsDb, remotePatientsDb, ['_id']).subscribe(newData => {
               observer.next(newData);
