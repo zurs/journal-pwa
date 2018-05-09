@@ -62,8 +62,34 @@ class Replication_model extends CI_Model {
 		return $result;
 	}
 
+	public function updateJournal(string $patientId, Journal $journal) : bool {
+		$row 		= $this->getById($patientId);
+		if($row === null) {
+			return true;
+		}
+
+		$accountIds = $row->getAccounts();
+		$accounts = [];
+		foreach($accountIds AS $accountId) {
+			$accounts[] = $this->account_model->getById($accountId);
+		}
+
+		$oldPrefix 	= $this->couch_client->databasePrefix;
+		$result = false;
+		foreach($accounts AS $account) {
+			$this->couch_client->databasePrefix = $account->username;
+			$result = $this->journal_model->create($journal) !== null;
+		}
+		$this->couch_client->databasePrefix = $oldPrefix;
+		return $result;
+	}
+
 	public function delete(string $patientId, string $accountId, string $db) : bool {
 		$row = $this->getById($patientId);
+		if($row === null) {
+			return true;
+		}
+
 		$row->removeAccount($accountId);
 
 		$oldPrefix = $this->couch_client->databasePrefix;
@@ -93,9 +119,6 @@ class Replication_model extends CI_Model {
 	public function getById(string $patientId) : ?ReplicationRow {
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
 		$row = $this->couch_client->getById($patientId, ReplicationRow::class, $client);
-		if($row === null) {
-			return null;
-		}
 		return $row;
 	}
 }
