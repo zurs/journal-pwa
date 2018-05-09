@@ -35,16 +35,30 @@ export class PatientsService {
             patient.localyStored = !!isLocal;
           });
         });
-      })
+      }),
+
     );
   }
 
-  public getPatient(id: string) {
+  public getPatient(id: string): Observable<PatientModel> {
     const apiKey = this.accService.getApiKey();
     const url = this.SERVER_URL + '/patient/' + id + '?apiKey=' + this.accService.getApiKey();
 
-    return this.http.get<PatientModel>(url).pipe(
+    return new Observable<PatientModel>(observer => {
+      this.localDbService.getPatient(id).subscribe(localData => {
+        if (localData !== null) {
+          observer.next(localData);
+        } else {
+          console.log('Calling server to get patient information');
+          this.http.get<PatientModel>(url).subscribe(serverData => {
+            observer.next(serverData);
+          });
+        }
+      });
+    })
+      .pipe(
       tap(patient => {
+        console.log(patient);
         this.journalService.getPatientJournals(patient.id).subscribe(journals => {
           console.log('Journals: ', journals);
           patient.journals = journals;

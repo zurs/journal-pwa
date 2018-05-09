@@ -3,6 +3,7 @@ import {PatientsService} from '../services/patients.service';
 import {PatientModel} from '../models/patient.model';
 import {AccountService} from '../services/account.service';
 import {Router} from '@angular/router';
+import {LocalDbService} from '../services/localDb.service';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private patientService: PatientsService,
     private accService: AccountService,
-    private router: Router
+    private router: Router,
+    private localDbService: LocalDbService
   ) { }
 
   ngOnInit() {
@@ -24,8 +26,16 @@ export class HomeComponent implements OnInit {
   }
   private updatePatientList() {
     this.patientService.getPatients().subscribe((patients) => {
+      console.log('Home-patients is updated');
+      console.log(patients);
       this.patients = patients;
-    });
+    },
+      (errorPath) => {
+      console.log()
+      this.localDbService.getPatients().subscribe(patients => {
+        this.patients = patients;
+      });
+      });
   }
 
   onLogoutClicked() {
