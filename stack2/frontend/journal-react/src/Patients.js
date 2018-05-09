@@ -31,18 +31,11 @@ export default class Patients extends Component {
 	}
 
 	componentDidMount() {
-		Promise.all([StoreService.getPatients(), PatientService.getPatients()])
-			.then((result) => {
-				const stored = result[0];
-				let patients = result[1];
-				patients = patients.filter((patient) => {
-					const isDuplicated = stored.some((store) => {
-						return store.id === patient.id;
-					});
-					return !isDuplicated;
+		PatientService.getPatients()
+			.then((patients) => {
+				this.setState({
+					patients: patients
 				});
-				const all = stored.concat(patients);
-				this.setState({patients: all});
 			});
 	}
 
