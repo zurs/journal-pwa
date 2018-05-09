@@ -85,3 +85,10 @@ waitingForStuff(stuff => {
   stuff.someFunc();
 })
 ```
+Funktionskedjor skapas på ny rad
+```
+waitingForStuff()
+.then(result => {
+  result.handle();
+});
+```
