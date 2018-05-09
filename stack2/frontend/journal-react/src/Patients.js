@@ -10,6 +10,10 @@ const PatientRows = (props) => {
 				<td>{patient.name}</td>
 				<td>{patient.ssn}</td>
 				<td><Link className={'btn btn-primary'} to={`/patient/${patient.id}`}>Läs Journal</Link></td>
+				<td>
+					{patient.offline && <button className={'btn btn-danger'}>Ta bort lokaldata</button>}
+					{!patient.offline && <button className={'btn btn-primary'}>Spara lokalt</button>}
+				</td>
 			</tr>
 		);});
 };
@@ -18,7 +22,7 @@ export default class Patients extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			patients : []
+			patients : [],
 		};
 		this.onLogout = this.onLogout.bind(this);
 	}

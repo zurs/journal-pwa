@@ -29,6 +29,7 @@ const JournalService = {
 						apiKey: AccountService.getApiKey()
 					}
 				}).then((response) => {
+					response.data.text = null;
 					success(response.data);
 				}).catch(() => {
 					fail("failed");
