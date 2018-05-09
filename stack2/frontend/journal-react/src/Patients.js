@@ -51,9 +51,17 @@ export default class Patients extends Component {
 		this.props.history.push('/login');
 	}
 
-	onLocalRemove(patient) {
-		//StoreService.delete(patient);
-
+	onLocalRemove(storedPatient) {
+		StoreService.deletePatient(storedPatient.id);
+		const newPatients = this.state.patients.map((patient) => {
+			if(patient.id === storedPatient.id) {
+				let newPatient = Object.assign({}, storedPatient);
+				newPatient.offline = false;
+				return newPatient;
+			}
+			return patient;
+		});
+		this.setState({patients: newPatients});
 	}
 
 	onLocalStore(storedPatient) {
