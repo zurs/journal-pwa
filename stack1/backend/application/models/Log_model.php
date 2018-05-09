@@ -18,6 +18,11 @@ class Log_model extends CI_Model {
 		return $this->couch_client->insert($log, $client);
 	}
 
+	public function delete(Log $log) : bool {
+		$client = $this->couch_client->getMasterClient('_logs');
+		return $this->couch_client->delete($log, $client);
+	}
+
 	public function getByJournalId($journalId) : array {
 		$client = $this->couch_client->getMasterClient('_logs');
 		return $this->couch_client->getBySelector(['journalId' => $journalId], Log::class, $client);

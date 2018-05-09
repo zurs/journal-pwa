@@ -63,37 +63,22 @@ class Patient_controller extends CI_Controller {
 	}
 
 	public function create_store($id) {
-		$patient = $this->patient_model->getById($id);
 		$account = $this->getCurrentAccount();
-		if($patient === null) {
-			$this->jsonresponse->Error("", 404);
-		}
-		$journals = $this->journal_model->getByPatientId($id);
-		foreach($journals AS $journal) {
-			$log = new Log();
-			$log->journalId = $journal->id;
-			$log->readerId 	= $account->id;
-			$this->log_model->create($log);
-		}
-		$db = $this->replication_model->create($patient, $account, $journals);
+		$db = $this->replication_model->create($id, $account->id, $account->username);
 
 		if($db === null) {
-			$this->jsonresponse->Error("", 500);
+			$this->jsonresponse->Error("could not replicate");
 		}
-		$this->jsonresponse->Ok(['patients' => $db."_patients", 'journals' => $db."_journals"]);
+		$this->jsonresponse->Ok(['db' => $account->username]);
 	}
 
 	public function delete_store($id) {
-		$patient = $this->patient_model->getById($id);
 		$account = $this->getCurrentAccount();
-		if($patient === null) {
-			$this->jsonresponse->Error("", 404);
-		}
-		$result = $this->replication_model->delete($patient, $account);
+		$result = $this->replication_model->delete($id, $account->id, $account->username);
 
 		if($result) {
 			$this->jsonresponse->Ok();
 		}
-		$this->jsonresponse->Error("", 500);
+		$this->jsonresponse->Error("Could not delete", 404);
 	}
 }
