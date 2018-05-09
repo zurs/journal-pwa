@@ -15,47 +15,56 @@ class Replication_model extends CI_Model {
 		$this->load->model('log_model');
 	}
 
-	public function create(Patient $patient, Account $account, array $journals) : ?string {
-		$row = $this->getById($patient->id);
+	public function create(string $patientId, string $accountId, string $db) : bool {
+		$patient = $this->patient_model->getById($patientId);
+		if($patient === null) {
+			return false;
+		}
+		$journals = $this->journal_model->getByPatientId($patientId);
+
+		$row = $this->getById($patientId);
 		if($row === null) {
 			$row = new ReplicationRow();
-			$row->id = $patient->id;
+			$row->id = $patientId;
 		}
-		$row->addAccount($account->id);
+		$row->addAccount($accountId);
 
+		$client 	= $this->couch_client->getMasterClient('_replicated_patients');
 		// Create dbs
-		$client = $this->couch_client->getMasterClient('_replicated_patients');
-		$oldPrefix = $this->couch_client->databasePrefix;
-		$this->couch_client->databasePrefix = $account->username;
+		$oldPrefix 	= $this->couch_client->databasePrefix;
+		$this->couch_client->databasePrefix = $db;
+
 		$createdPatients 	= $this->couch_client->getMasterClient("_patients", true);
 		$createdJournals 	= $this->couch_client->getMasterClient("_journals", true);
-		$addedRow = $this->couch_client->upsert($row, $client);
+		$addedRow 			= $this->couch_client->upsert($row, $client);
 
-		$result = null;
+		$result = false;
 		if($addedRow && $createdJournals && $createdPatients) {
 			$this->patient_model->create($patient);
 			foreach($journals AS $journal) {
 				$this->journal_model->create($journal);
 			}
-			$result = $account->username;
+			$result = true;
 		}
 		$this->couch_client->databasePrefix = $oldPrefix;
 		return $result;
 	}
 
-	public function delete(Patient $patient, Account $account) {
-		$row = $this->getById($patient->id);
-		$row->removeAccount($account->id);
+	public function delete(string $patientId, string $accountId, string $db) : bool {
+		$row = $this->getById($patientId);
+		$row->removeAccount($accountId);
 
 		$oldPrefix = $this->couch_client->databasePrefix;
-		$this->couch_client->databasePrefix = $account->username;
+		$this->couch_client->databasePrefix = $db;
 
-		$storedPatient 	= $this->patient_model->getById($patient->id);
-		$storedJournals = $this->journal_model->getByPatientId($patient->id);
-		$this->patient_model->delete($storedPatient);
-		foreach($storedJournals AS $journal) {
+		$patient 	= $this->patient_model->getById($patientId);
+		$journals 	= $this->journal_model->getByPatientId($patientId);
+
+		$this->patient_model->delete($patient);
+		foreach($journals AS $journal) {
 			$this->journal_model->delete($journal);
 		}
+
 		$this->couch_client->databasePrefix = $oldPrefix;
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
 		return $this->couch_client->upsert($row, $client) !== null;
@@ -66,7 +75,7 @@ class Replication_model extends CI_Model {
 		$row = $this->couch_client->getById($patientId, ReplicationRow::class, $client);
 		if($row === null) {
 			return null;
-		};
+		}
 		return $row;
 	}
 }
