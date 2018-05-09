@@ -19,9 +19,13 @@ Kör en skarp version av React-appen på port 8081, börja på `/stack2/frontend
 ```
 npm run build
 cd build
-http-server -p 8080
+http-server -p 8081
 ```
 
+För att bygga versionerna & starta http servern kör ifrån `/stack1/frontend/journal-angular` resp `/stack2/frontend/journal-react`:
+```
+npm run pwa
+```
 ## Backend
 
 Backenden kan man köra med MAMP genom att göra symlinks från repositoriet till MAMP's htdocs, tex.
@@ -84,4 +88,11 @@ arrow-funktioner måste börja på en ny rad på följande sätt:
 waitingForStuff(stuff => {
   stuff.someFunc();
 })
+```
+Funktionskedjor skapas på ny rad
+```
+waitingForStuff()
+.then(result => {
+  result.handle();
+});
 ```

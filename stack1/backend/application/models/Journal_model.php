@@ -20,6 +20,11 @@ class Journal_model extends CI_Model {
 		return $this->couch_client->insert($journal, $client);
 	}
 
+	public function delete(Journal $journal) : bool {;
+		$client = $this->couch_client->getMasterClient('_journals');
+		return $this->couch_client->delete($journal, $client);
+	}
+
 	public function getById(string $id) {
 		$client = $this->couch_client->getMasterClient('_journals');
 		return $this->couch_client->getById($id, Journal::class, $client);

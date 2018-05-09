@@ -20,6 +20,11 @@ class Patient_model extends CI_Model {
 		return $this->couch_client->insert($patient, $client);
 	}
 
+	public function delete(Patient $patient) : bool {
+		$client = $this->couch_client->getMasterClient('_patients');
+		return $this->couch_client->delete($patient, $client);
+	}
+
 	public function getById(string $id) {
 		$client = $this->couch_client->getMasterClient('_patients');
 		return $this->couch_client->getById($id, Patient::class, $client);
