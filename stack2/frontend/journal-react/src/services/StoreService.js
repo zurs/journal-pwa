@@ -79,7 +79,12 @@ const StoreService = {
 	deletePatient(patientId) {
 		return new Promise((success) => {
 			localStorage.removeItem('patient/' + patientId);
-			success();
+			this.getJournals(patientId).then((journals) => {
+				journals.forEach((journal) => {
+					localStorage.removeItem('patient/'+journal.patientId+'/journal/'+journal.id);
+				});
+				success();
+			});
 		});
 	},
 	getPatients() {
