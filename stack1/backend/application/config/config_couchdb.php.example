@@ -13,3 +13,4 @@ $config['couchdb']['host'] 		= '127.0.0.1';
 $config['couchdb']['port'] 		= '5984';
 $config['couchdb']['user'] 		= 'admin';
 $config['couchdb']['password'] 	= 'admin';
+$config['couchdb']['prefix']	= '';

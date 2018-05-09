@@ -8,7 +8,6 @@
 require_once('application/traits/ApiKeyAuthenticated.php');
 
 class Journal_controller extends CI_Controller {
-
 	use ApiKeyAuthenticated;
 
 	function __construct() {
@@ -24,6 +23,10 @@ class Journal_controller extends CI_Controller {
 
 	public function create() {
 		$journal = new Journal();
+		$id = $this->input->post('id');
+		if($id !== null) {
+			$journal->id = $id;
+		}
 		$journal->patientId = $this->input->post('patientId');
 		$journal->writtenAt = $this->input->post('writtenAt');
 		$journal->text      = $this->input->post('text');
@@ -58,7 +61,6 @@ class Journal_controller extends CI_Controller {
 		if($result === null) {
 			$this->jsonresponse->Error();
 		}
-		$this->replication_model->createLog($journal->patientId, $result);
 
 		$this->jsonresponse->Ok($journal);
 	}

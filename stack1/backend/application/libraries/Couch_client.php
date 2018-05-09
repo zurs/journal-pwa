@@ -5,7 +5,7 @@ use PHPOnCouch\CouchClient;
 class Couch_client {
 	private $clients;
 	public $databasePrefix = "test1";
-	public function __construct(){
+	public function __construct() {
 		$this->clients = [
 			'master' => [],
 			'client' => []
