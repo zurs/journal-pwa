@@ -28,28 +28,33 @@ export class LocalDbService {
 
   }
 
-  public syncPatient(id: string): Promise<any> {
+  public syncPatient(id: string) {
     // syncDom.setAttribute('data-sync-state', 'syncing');
 
-    const returnObservable = new Promise<any>((resolve, reject) => {
-      const url = this.SERVER_URL + '/patient/' + id + '/store';
-      this.http.post<any>(url, {
-        apiKey: this.accService.getApiKey()
-      }).toPromise()
-        .then(response => {
-          if (!this.replicationActive) {
-            this.setupFullReplication(response.db)
-              .then(resolve);
-          } else {
-            resolve();
-          }
+    if (!this.replicationActive) {
+      const dbNameUrl = this.SERVER_URL + '/account/db?apiKey=' + this.accService.getApiKey();
+      this.http.get(dbNameUrl)
+        .subscribe(response => {
+          this.setupFullReplication(response.db);
+          this.replicationActive = true;
         });
-    });
+    }
 
-    return returnObservable;
+    const url = this.SERVER_URL + '/patient/' + id + '/store';
+    this.http.post<any>(url, {
+      apiKey: this.accService.getApiKey()
+    }).subscribe();
   }
 
   public unsyncPatient(id: string) {
+    if (!this.replicationActive) {
+      const url = this.SERVER_URL + '/account/db?apiKey=' + this.accService.getApiKey();
+      this.http.get(url)
+        .subscribe(response => {
+          this.setupFullReplication(response.db);
+          this.replicationActive = true;
+        });
+    }
     this.http.delete(this.SERVER_URL + '/patient/' + id + '/store?apiKey=' + this.accService.getApiKey()).subscribe(response => {
     });
   }
@@ -127,7 +132,7 @@ export class LocalDbService {
         localDb.createIndex({
           index: {fields: indexFields}
         });
-        resolve(info);
+        onChangeObservable.next(null);
         localDb.sync(remoteAddress, {live: true, retry: true})
           .on('error', (errorMsg) => {
             console.log('Syncing error: ', errorMsg);

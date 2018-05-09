@@ -51,10 +51,7 @@ export class HomeComponent implements OnInit {
   }
 
   onSyncPatientJournals(id: string) {
-    this.localDbService.syncPatient(id)
-      .then(() => {
-        this.updatePatientList();
-      });
+    this.localDbService.syncPatient(id);
   }
 
   onUnsyncPatientJournals(id: string) {
