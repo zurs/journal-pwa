@@ -1,13 +1,13 @@
 import PatientService from "./PatientService";
 import JournalService from "./JournalService";
-
+import uuid from 'uuid/v4';
 const StoreService = {
 	getJournals(patientId) {
 		return new Promise((success) => {
 			const journalIds = [];
 			Object.keys(localStorage).forEach((key) => {
 				const keySplit = key.split('/');
-				if(keySplit.length === 4 && keySplit[1] === patientId) {
+				if(keySplit.length === 4 && keySplit[1] === patientId && keySplit[2] !== 'local') {
 					journalIds.push(keySplit[3]);
 				}
 			});
@@ -39,6 +39,26 @@ const StoreService = {
 				const storedJournal = localStorage.getItem(uri);
 				success(JSON.parse(storedJournal));
 			}
+		});
+	},
+	createLocalJournal(journal) {
+		journal.id = uuid();
+		journal.submittedAt = Date.now();
+		return new Promise((success) => {
+			const promise1 = this.getPatient(journal.patientId).then(() => {
+				const storedJournals = localStorage.getItem('patient/'+journal.patientId+'/local/journals');
+				let journals = [];
+				if(storedJournals !== null) {
+					journals = JSON.parse(storedJournals);
+				}
+				journals.push(journal);
+				localStorage.setItem('patient/'+journal.patientId+'/local/journals', JSON.stringify(journals));
+
+			});
+			const promise2 = this.createJournal(journal);
+			Promise.all([promise1, promise2]).then(() => {
+				success(journal);
+			});
 		});
 	},
 	createJournal(journal) {

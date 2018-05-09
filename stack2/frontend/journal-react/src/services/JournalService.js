@@ -36,9 +36,19 @@ const JournalService = {
 					}
 				}).then((response) => {
 					response.data.text = null;
-					success(response.data);
+					StoreService.getPatient(journal.patientId)
+						.then(() => {
+							 StoreService.createJournal(response.data);
+						})
+						.finally(() => {
+							success(response.data);
+						});
 				}).catch(() => {
-					fail("failed");
+					StoreService.createLocalJournal(journal)
+						.then((response) => {
+							response.text = null;
+							success(response);
+						});
 				});
 			});
 		}
