@@ -22,6 +22,12 @@ class Replication_model extends CI_Model {
 		}
 		$journals = $this->journal_model->getByPatientId($patientId);
 
+		$logs  = [];
+		foreach($journals AS $journal) {
+			$l = $this->log_model->getByJournalId($journal->id);
+			$logs = array_merge($logs, $l);
+		}
+
 		$row = $this->getById($patientId);
 		if($row === null) {
 			$row = new ReplicationRow();
@@ -36,13 +42,19 @@ class Replication_model extends CI_Model {
 
 		$createdPatients 	= $this->couch_client->getMasterClient("_patients", true);
 		$createdJournals 	= $this->couch_client->getMasterClient("_journals", true);
+		$createdLogs		= $this->couch_client->getMasterClient("_logs", true);
 		$addedRow 			= $this->couch_client->upsert($row, $client);
 
 		$result = false;
-		if($addedRow && $createdJournals && $createdPatients) {
+		if($addedRow && $createdJournals && $createdPatients && $createdLogs) {
+			// Create documents
 			$this->patient_model->create($patient);
 			foreach($journals AS $journal) {
 				$this->journal_model->create($journal);
+			}
+
+			foreach($logs AS $log) {
+				$this->log_model->create($log);
 			}
 			$result = true;
 		}
@@ -59,10 +71,18 @@ class Replication_model extends CI_Model {
 
 		$patient 	= $this->patient_model->getById($patientId);
 		$journals 	= $this->journal_model->getByPatientId($patientId);
+		$logs		= [];
+		foreach($journals AS $journal) {
+			$l = $this->log_model->getByJournalId($journal->id);
+			$logs = array_merge($logs, $l);
+		}
 
 		$this->patient_model->delete($patient);
 		foreach($journals AS $journal) {
 			$this->journal_model->delete($journal);
+		}
+		foreach($logs AS $log) {
+			$this->log_model->delete($log);
 		}
 
 		$this->couch_client->databasePrefix = $oldPrefix;
