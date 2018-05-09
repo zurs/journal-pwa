@@ -69,7 +69,7 @@ class Patient_controller extends CI_Controller {
 		if($db === null) {
 			$this->jsonresponse->Error("could not replicate");
 		}
-		$this->jsonresponse->Ok(['patients' => $db."_patients", 'journals' => $db."_journals"]);
+		$this->jsonresponse->Ok(['db' => $account->username]);
 	}
 
 	public function delete_store($id) {
