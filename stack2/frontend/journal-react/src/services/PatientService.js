@@ -27,7 +27,6 @@ const PatientService = {
 						});
 						return !isDuplicated;
 						});
-
 					const all = stored.concat(patients);
 					success(all);
 				})
@@ -35,16 +34,21 @@ const PatientService = {
 		});
 	},
 	getPatient(patientId) {
-		return new Promise((success, fail) => {
-			Request.get('/' + patientId, {
-				params: {
-					apiKey: AccountService.getApiKey()
-				}
-			}).then((response) => {
-				success(response.data);
-			}).catch(() => {
-				fail("failed");
-			})
+		return new Promise((success) => {
+			StoreService.getPatient(patientId)
+				.then((patient) => {
+					success(patient);
+				})
+				.catch(() => {
+					Request.get('/' + patientId, {
+						params: {
+							apiKey: AccountService.getApiKey()
+						}
+					}).then((response) => {
+						success(response.data);
+					})
+					.catch(() => {});
+				});
 		});
 	},
 	getJournals(patientId) {
@@ -56,7 +60,7 @@ const PatientService = {
 			}).then((response) => {
 				success(response.data);
 			}).catch(() => {
-				fail("failed");
+				success([]);
 			})
 		});
 	}
