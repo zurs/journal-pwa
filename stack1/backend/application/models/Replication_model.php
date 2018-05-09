@@ -98,7 +98,13 @@ class Replication_model extends CI_Model {
 		}
 
 		$this->couch_client->databasePrefix = $oldPrefix;
+
 		$client = $this->couch_client->getMasterClient('_replicated_patients');
+		$result = null;
+		$accounts = $row->getAccounts();
+		if(count($accounts) < 1) {
+			return $this->couch_client->delete($row, $client) !== null;
+		}
 		return $this->couch_client->upsert($row, $client) !== null;
 	}
 
