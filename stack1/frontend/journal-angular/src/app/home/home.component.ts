@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
     private localDbService: LocalDbService,
     private changeDetector: ChangeDetectorRef
   ) {
+    this.changeDetector.detach();
   }
 
   ngOnInit() {

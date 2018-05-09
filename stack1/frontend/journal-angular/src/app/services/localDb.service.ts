@@ -82,17 +82,13 @@ export class LocalDbService {
     return new Promise<PatientModel>((resolve, reject) => {
       this.getPatients()
         .then(patients => {
-          let foundPatient: PatientModel = null;
           for (let i = 0; i < patients.length; i++) {
             if (patients[i].id === id) {
-              foundPatient = patients[i];
-            }
-            if (foundPatient !== null) {
-              resolve(foundPatient);
-            } else {
-              reject(null);
+              resolve(patients[i]);
+              return;
             }
           }
+          reject(null);
         });
     });
   }

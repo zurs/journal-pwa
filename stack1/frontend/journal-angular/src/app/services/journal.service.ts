@@ -17,71 +17,70 @@ export class JournalService {
               private localDbService: LocalDbService) {
   }
 
-  public getPatientJournals(patientId: string): Observable<JournalModel[]> {
+  public getPatientJournals(patientId: string): Promise<JournalModel[]> {
     const url = this.SERVER_URL + '/patient/' + patientId + '/journals?apiKey=' + this.accService.getApiKey();
 
-    const jo = new Observable<JournalModel[]>(observable => {
+    return new Promise<JournalModel[]>((resolve, reject) => {
       this.localDbService.getPatients()
         .then((response) => {
           const doesExist = response.find((patient: PatientModel) => {
-            if (patient.id === patientId && patient.localyStored) {
-              return true;
-            }
-            return false;
+            return (patient.id === patientId && patient.localyStored);
           });
 
           if (doesExist) {
             console.log('Getting the journals from local database');
             this.localDbService.getPatientJournals(patientId)
               .then(data => {
-                observable.next(data);
+                resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
               });
           } else {
             console.log('Getting the journals from the server');
             this.http.get<JournalModel[]>(url).subscribe(data => {
-              observable.next(data);
+              resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
             });
           }
         });
     });
-    return jo.pipe(
-      tap(journals => {
-        journals.forEach(note => {
-          note.submittedAt = String(+note.submittedAt * 1000);
-        });
-      }));
   }
 
-  public getJournal(id: string): Observable<JournalModel> {
+  private convertUnixTimeToJavascriptUnixInArray(journals: JournalModel[]): JournalModel[] {
+    journals.forEach(note => {
+      note.submittedAt = String(+note.submittedAt * 1000);
+    });
+    return journals;
+  }
+
+  private convertUnixTimeToJavascriptUnix(journal: JournalModel): JournalModel {
+    journal.submittedAt = String(+journal.submittedAt * 1000);
+    return journal;
+  }
+
+  public getJournal(id: string): Promise<JournalModel> {
     const url = this.SERVER_URL + '/journal/' + id + '?apiKey=' + this.accService.getApiKey();
 
-    return new Observable<JournalModel>(observer => {
-
+    return new Promise<JournalModel>((resolve, reject) => {
       this.localDbService.getPatientJournal(id)
         .then(journal => {
           if (journal) {
-            observer.next(journal);
+            resolve(this.convertUnixTimeToJavascriptUnix(journal));
           } else {
             this.http.get<JournalModel>(url).subscribe(serverJournal => {
-              observer.next(serverJournal);
+              resolve(this.convertUnixTimeToJavascriptUnix(serverJournal));
             });
           }
         });
-    }).pipe(
-      tap(journal => {
-        journal.submittedAt = String(+journal.submittedAt * 1000);
-      })
-    );
+    });
   }
 
   public loadJournalText(journalsArray: JournalModel[], journalId: string) {
-    this.getJournal(journalId).subscribe(journal => {
-      for (let i = 0; i < journalsArray.length; i++) {
-        if (journalsArray[i].id === journal.id) {
-          journalsArray[i] = journal;
+    this.getJournal(journalId)
+      .then(journal => {
+        for (let i = 0; i < journalsArray.length; i++) {
+          if (journalsArray[i].id === journal.id) {
+            journalsArray[i] = journal;
+          }
         }
-      }
-    });
+      });
   }
 
   public newJournalNote(text: string, patientId: string) {

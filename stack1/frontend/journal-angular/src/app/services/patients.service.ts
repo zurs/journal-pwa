@@ -51,15 +51,12 @@ export class PatientsService {
   }
 
   public getPatient(id: string): Promise<PatientModel> {
-    const apiKey = this.accService.getApiKey();
     const url = this.SERVER_URL + '/patient/' + id + '?apiKey=' + this.accService.getApiKey();
 
     return new Promise<PatientModel>((resolve, reject) => {
       this.localDbService.getPatient(id)
         .then(localPatient => {
-          if (localPatient !== null) {
-            resolve(this.injectPatientWithJournals(localPatient));
-          }
+          resolve(this.injectPatientWithJournals(localPatient));
         })
         .catch(() => {
           this.http.get<PatientModel>(url)
@@ -74,7 +71,7 @@ export class PatientsService {
   private injectPatientWithJournals(patient: PatientModel): Promise<PatientModel> {
     return new Promise((resolve, reject) => {
       this.journalService.getPatientJournals(patient.id)
-        .subscribe(journals => {
+        .then(journals => {
           patient.journals = journals;
           resolve(patient);
         });
