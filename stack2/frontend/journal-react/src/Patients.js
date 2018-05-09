@@ -3,6 +3,7 @@ import PatientService from './services/PatientService';
 import {Link} from "react-router-dom";
 import AccountService from "./services/AccountService";
 import StoreService from "./services/StoreService";
+import JournalService from "./services/JournalService";
 
 const PatientRows = (props) => {
 	return props.patients.map((patient) => {
@@ -58,14 +59,16 @@ export default class Patients extends Component {
 	}
 
 	onLocalStore(storedPatient) {
-		StoreService.createPatient(storedPatient);
-		const newPatients = this.state.patients.map((patient) => {
-			if(patient.id === storedPatient.id) {
-				return Object.assign({}, storedPatient);
-			}
-			return patient;
-		});
-		this.setState({patients: newPatients});
+		StoreService.createPatient(storedPatient)
+			.then(() => {
+				const newPatients = this.state.patients.map((patient) => {
+					if(patient.id === storedPatient.id) {
+						return Object.assign({}, storedPatient);
+					}
+					return patient;
+				});
+				this.setState({patients: newPatients});
+			});
 	}
 
 	render() {

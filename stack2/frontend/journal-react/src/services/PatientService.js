@@ -52,7 +52,7 @@ const PatientService = {
 		});
 	},
 	getJournals(patientId) {
-		return new Promise((success, fail) => {
+		return new Promise((success) => {
 			Request.get('/' + patientId + '/journals', {
 				params: {
 					apiKey: AccountService.getApiKey()

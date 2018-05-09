@@ -1,3 +1,6 @@
+import PatientService from "./PatientService";
+import JournalService from "./JournalService";
+
 const StoreService = {
 	getJournal(journalId) {
 		return new Promise((success, fail) => {
@@ -36,7 +39,19 @@ const StoreService = {
 		return new Promise((success) => {
 			patient.offline = true;
 			localStorage.setItem('patientId=' + patient.id, JSON.stringify(patient));
-			success();
+			PatientService.getJournals(patient.id).then((journals) => {
+				const promises = journals.map((journal) => {
+					return JournalService.getJournal(journal.id);
+				});
+				return Promise.all(promises);
+			}).then((journals) => {
+				const promises = journals.map((journal) => {
+					return this.createJournal(journal);
+				});
+				return Promise.all(promises);
+			}).then(() => {
+				success();
+			});
 		});
 	},
 	getPatient(patientId) {
@@ -65,7 +80,7 @@ const StoreService = {
 
 			const promises = patientIds.map((patientId) => {
 				return this.getPatient(patientId).then((patient) => {
-					return patient
+					return patient;
 				});
 			});
 
