@@ -10,28 +10,29 @@ use PHPOnCouch\CouchClient;
 
 class Patient_model extends CI_Model {
 
+	const DB = 'patients';
 	function __construct() {
 		parent::__construct();
 		$this->load->library('couch_client');
 	}
 
 	public function create(Patient $patient) {
-		$client = $this->couch_client->getMasterClient('_patients');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->insert($patient, $client);
 	}
 
 	public function delete(Patient $patient) : bool {
-		$client = $this->couch_client->getMasterClient('_patients');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->delete($patient, $client);
 	}
 
 	public function getById(string $id) {
-		$client = $this->couch_client->getMasterClient('_patients');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->getById($id, Patient::class, $client);
 	}
 
 	public function getAll() : array {
-		$client = $this->couch_client->getMasterClient('_patients');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		$client->include_docs(true);
 		$docs = $client->getAllDocs();
 

@@ -4,22 +4,33 @@ use PHPOnCouch\CouchClient;
 
 class Couch_client {
 	private $clients;
-	public $databasePrefix = "test1";
+	private $ci;
+	private $prefix = "";
 	public function __construct() {
 		$this->clients = [
 			'master' => [],
 			'client' => []
 		];
+		$this->ci = &get_instance();
+		$this->resetPrefix();
+	}
+
+	public function setPrefix(string $prefix) {
+		$this->prefix = $prefix;
+	}
+
+	public function resetPrefix() {
+		$this->prefix = $this->ci->config->item('prefix', 'couchdb');
 	}
 
 	public function getMasterClient(string $database, $create = false) {
-		$ci = &get_instance();
+		$ci = $this->ci;
 		$cfgHost 		= $ci->config->item('host', 'couchdb');
 		$cfgPort 		= $ci->config->item('port', 'couchdb');
 		$cfgUser 		= $ci->config->item('user', 'couchdb');
 		$cfgPassword	= $ci->config->item('password', 'couchdb');
 
-		$database = $this->databasePrefix.$database;
+		$database = implode("_", [$this->prefix,$database]);
 
 		if(key_exists($database, $this->clients)) {
 			return $this->clients['master'][$database];

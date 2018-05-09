@@ -9,7 +9,8 @@ use Ramsey\Uuid\Uuid;
 
 
 class Account_model extends CI_Model{
-
+	
+	const DB = 'accounts';
 
 	public function __construct() {
 		parent::__construct();
@@ -19,18 +20,18 @@ class Account_model extends CI_Model{
 
 		$account->password = password_hash($account->password, PASSWORD_BCRYPT);
 
-		$client = $this->couch_client->getMasterClient('');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->insert($account, $client);
 
 	}
 
 	public function update(Account $account) : bool {
-		$client = $this->couch_client->getMasterClient('');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->update($account, $client) !== null;
 	}
 	
 	public function getByUsername(string $username) {
-		$client = $this->couch_client->getMasterClient('');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->getBySelector(['username' => $username], Account::class, $client, 1);
 	}
 
@@ -53,12 +54,12 @@ class Account_model extends CI_Model{
 			return null;
 		}
 
-		$client = $this->couch_client->getMasterClient('');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->getBySelector(['apiKey' => $apiKey], Account::class, $client, 1);
 	}
 
 	public function getById(string $id) {
-		$client = $this->couch_client->getMasterClient('');
+		$client = $this->couch_client->getMasterClient(self::DB);
 		return $this->couch_client->getById($id, Account::class, $client);
 	}
 }
