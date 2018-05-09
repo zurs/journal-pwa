@@ -22,7 +22,7 @@ export class LocalDbService {
               private accService: AccountService) {
     this.patientsDb = new PouchDB('patients');
     this.journalsDb = new PouchDB('journals');
-    this.patientsDb.replicate.to(this.remoteCouchServer + 'rep_test', {live: true});
+    // this.patientsDb.sync(this.remoteCouchServer + 'rep_test', {live: true});
   }
 
   public syncPatient(id: string): Observable<any> {
@@ -34,7 +34,7 @@ export class LocalDbService {
         const remotePatientsDb = this.remoteCouchServer + response.patients;
         const remoteJournalsDb = this.remoteCouchServer + response.journals;
         // Replicate patients
-        this.patientsDb.replicate.from(remotePatientsDb)
+        this.patientsDb.sync(remotePatientsDb, {live: true})
           .on('complete', (data) => {
             console.log('Replication of patient done');
             this.patientsDb.createIndex({
@@ -46,22 +46,31 @@ export class LocalDbService {
             console.log('Syncing error: ', errorMsg);
           })
           .on('change', newData => {
+            console.log('Patients database changed.');
             observer.next(newData);
           });
+        // ==================
         // Replicate journals
-        this.journalsDb.replicate.from(remoteJournalsDb)
+        this.journalsDb.sync(remoteJournalsDb, {live: true})
           .on('complete', () => {
             console.log('Journal replication done');
             this.patientsDb.createIndex({
               index: {fields: ['patientId']}
             });
-          }).on('error', (errorMsg) => {
+          })
+          .on('error', (errorMsg) => {
           console.log('Syncing error: ', errorMsg);
         });
       });
     });
 
     return returnObservable;
+  }
+
+  public unsyncPatient(id: string) {
+    this.http.delete(this.SERVER_URL + 'patient/' + id + '/store').subscribe(response => {
+      console.log('Patient is or is about to get unsynced');
+    });
   }
 
   public getPatients(): Observable<PatientModel[]> {
@@ -91,10 +100,27 @@ export class LocalDbService {
           'patientId': patientId
         },
         fields: ['_id', 'submittedAt']
-      }).then(result => {
+      })
+        .then(result => {
         observer.next(JournalModel.parseArray(result.docs));
         observer.complete();
       });
     });
   }
+
+  public getPatientJournal(id: string): Observable<JournalModel> {
+    return new Observable<JournalModel>(observer => {
+      this.journalsDb.find({
+        selector: {
+          '_id': id
+        }
+      })
+        .then(result => {
+          console.log(result);
+          observer.next(JournalModel.parseObject(result.docs[0]));
+          observer.complete();
+        });
+    });
+  }
 }
+

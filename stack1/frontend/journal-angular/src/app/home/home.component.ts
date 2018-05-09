@@ -40,8 +40,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onUnsyncPatientJournals() {
-
+  onUnsyncPatientJournals(id: string) {
+    this.patientService.unsyncPatient(id);
   }
 
 }

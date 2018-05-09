@@ -56,4 +56,8 @@ export class PatientsService {
   public syncPatient(id: string): Observable<any> {
     return this.localDbService.syncPatient(id);
   }
+
+  public unsyncPatient(id: string) {
+    this.localDbService.unsyncPatient(id);
+  }
 }

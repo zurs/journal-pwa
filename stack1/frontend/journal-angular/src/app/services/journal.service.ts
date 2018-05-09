@@ -53,9 +53,21 @@ export class JournalService {
       }));
   }
 
-  public getJournal(id: string) {
+  public getJournal(id: string): Observable<JournalModel> {
     const url = this.SERVER_URL + '/journal/' + id + '?apiKey=' + this.accService.getApiKey();
-    return this.http.get<JournalModel>(url).pipe(
+
+    return new Observable<JournalModel>(observer => {
+
+      this.localDbService.getPatientJournal(id).subscribe(journal => {
+        if (journal) {
+          observer.next(journal);
+        } else {
+          this.http.get<JournalModel>(url).subscribe(serverJournal => {
+            observer.next(serverJournal);
+          });
+        }
+      });
+    }).pipe(
       tap(journal => {
         journal.submittedAt = String(+journal.submittedAt * 1000);
       })
