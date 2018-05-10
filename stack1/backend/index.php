@@ -309,7 +309,6 @@ switch (ENVIRONMENT)
 // Autoload composer libs
 $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
-
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE

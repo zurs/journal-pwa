@@ -2,6 +2,10 @@
 
 class Log_model extends CI_Model {
 
+    public function __construct() {
+        parent::__construct();
+    }
+
     public function create(Log $log): ?Log {
         $query = $this->cassandra_client->insert('logs', (array)$log);
         $result = $this->cassandra_client->run($query);

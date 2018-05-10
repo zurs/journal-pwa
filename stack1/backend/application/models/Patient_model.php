@@ -6,14 +6,12 @@
  * Time: 14:21
  */
 
-use PHPOnCouch\CouchClient;
 
 class Patient_model extends CI_Model {
 
 	const DB = 'patients';
 	function __construct() {
 		parent::__construct();
-		$this->load->library('couch_client');
 	}
 
 	public function create(Patient $patient) {

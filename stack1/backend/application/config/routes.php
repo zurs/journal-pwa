@@ -55,7 +55,7 @@ $route['translate_uri_dashes']  = FALSE;
 
 $route['account/login']['post']  	= 'account_controller/login';
 $route['account']['post']       	= 'account_controller/create';
-$route['account/db']['get']         = 'account_controller/getDBName';
+$route['account/db']['get']         = 'authenticated_controller/getDb';
 
 $route['journal']['post'] 				= 'journal_controller/create';
 $route['journal/(:any)']['get']			= 'journal_controller/get/$1';
@@ -70,4 +70,4 @@ $route['patient/(:any)/store']['delete']	= 'patient_controller/delete_store/$1';
 
 $route['log/sync']['post']					= 'log_controller/sync';
 
-$route['heartbeat']['get']                  = 'account_controller/heartbeat';
+$route['heartbeat']['get']                  = 'heartbeat_controller/index';

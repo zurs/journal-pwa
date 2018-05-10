@@ -1,11 +1,8 @@
 <?php
-
-require_once APPPATH . 'controllers/Authenticated_controller.php';
-
+require "Authenticated_controller.php";
 class Patient_controller extends Authenticated_controller {
     public function __construct(){
         parent::__construct();
-        $this->load->model('patient_model');
     }
 
     public function create() {

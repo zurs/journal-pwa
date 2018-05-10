@@ -1,12 +1,9 @@
 <?php
 use Ramsey\Uuid\Uuid;
-require_once APPPATH . 'controllers/Authenticated_controller.php';
-
+require "Authenticated_controller.php";
 class Log_controller extends Authenticated_controller {
     public function __construct() {
         parent::__construct();
-
-        $this->load->model('log_model');
     }
 
     public function sync() {
