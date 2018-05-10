@@ -17,4 +17,8 @@ class Authenticated_controller extends CI_Controller {
 		}
 		$this->current_account->setAccount($account);
 	}
+
+	public function getDb() {
+		$this->json_response->Ok(['db' => $this->current_account->username]);
+	}
 }
