@@ -6,7 +6,6 @@ import AccountService from "./AccountService";
 const Request = RequestUtil.create('log');
 const StoreService = {
 	syncStorage() {
-		console.log("sync storage");
 		this.getPatients().then((patients) => {
 				const promises = patients.map((patient) => {
 					return this.getLocalJournals(patient.id);
