@@ -2,6 +2,9 @@ import PatientService from "./PatientService";
 import JournalService from "./JournalService";
 import uuid from 'uuid/v4';
 const StoreService = {
+	syncStorage() {
+		console.log("sync storage");
+	},
 	getJournals(patientId) {
 		return new Promise((success) => {
 			const journalIds = [];

@@ -1,13 +1,9 @@
 import axios from 'axios';
 import AccountService from "./AccountService";
 import StoreService from "./StoreService";
+import {Request as RequestUtil} from "../util/Request";
 
-const Request = axios.create({
-	baseURL: 'http://localhost/stack2/journal',
-	headers: {
-		'Content-Type': 'application/json'
-	}
-});
+const Request = RequestUtil.create('journal');
 
 const JournalService = {
 		getJournal(journalId) {

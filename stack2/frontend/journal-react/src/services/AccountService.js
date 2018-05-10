@@ -1,12 +1,5 @@
-import axios from 'axios';
-
-
-const Request = axios.create({
-	baseURL: 'http://localhost/stack2/account',
-	headers: {
-		'Content-Type': 'application/json'
-	}
-});
+import {Request as RequestUtil} from "../util/Request";
+const Request = RequestUtil.create('account');
 
 let apiKey = null;
 const AccountService = {
