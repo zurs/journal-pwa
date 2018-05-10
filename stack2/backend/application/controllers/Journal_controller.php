@@ -12,6 +12,10 @@ class Journal_controller extends Authenticated_controller {
 
     public function create() {
         $journal = new Journal();
+        $id = $this->input->post('id');
+        if($id !== null) {
+            $journal->id = $id;
+        }
         $journal->patientId = $this->input->post('patientId');
         $journal->writtenAt = $this->input->post('writtenAt');
         $journal->text      = $this->input->post('text');

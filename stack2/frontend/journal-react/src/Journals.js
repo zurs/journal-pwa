@@ -15,7 +15,10 @@ export default class Journals extends Component {
 		super(props);
 		this.patientId = this.props.match.params.number;
 		this.state = {
-			patient: {name: "", ssn: ""},
+			patient: {
+				name: "",
+				ssn: ""
+			},
 			journals: [],
 			showNewNote: false
 		};
@@ -28,7 +31,6 @@ export default class Journals extends Component {
 	componentDidMount() {
 		Promise.all([PatientService.getPatient(this.patientId), PatientService.getJournals(this.patientId)])
 			.then((result) => {
-				console.log(result[1]);
 				this.setState({
 					patient: result[0],
 					journals: result[1]
@@ -42,21 +44,33 @@ export default class Journals extends Component {
 		JournalService.getJournal(journalId)
 			.then((journal) => {
 				currentJournals[index] = journal;
-				this.setState({journals: currentJournals})
+				this.setState({
+					journals: currentJournals
+				})
 			});
 	}
 
 	onNewNote(note) {
-		JournalService.createJournal({text: note, writtenAt: Date.now(), patientId: this.patientId})
+		JournalService.createJournal({
+			text: note,
+			writtenAt: Date.now(),
+			patientId:
+			this.patientId
+		})
 			.then((newJournal) => {
 				let currentJournals = this.state.journals;
 				currentJournals.push(newJournal);
-				this.setState({journals: currentJournals, showNewNote: false});
+				this.setState({
+					journals: currentJournals,
+					showNewNote: false
+				});
 			});
 	}
 
 	onToggleNewNote() {
-		this.setState({showNewNote: !this.state.showNewNote});
+		this.setState({
+			showNewNote: !this.state.showNewNote
+		});
 	}
 
 	render() {

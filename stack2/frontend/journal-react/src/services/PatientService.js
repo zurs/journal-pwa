@@ -1,13 +1,8 @@
-import axios from 'axios';
 import AccountService from "./AccountService";
 import StoreService from "./StoreService";
+import {Request as RequestUtil} from "../util/Request";
 
-const Request = axios.create({
-	baseURL: 'http://localhost/stack2/patient',
-	headers: {
-		'Content-Type': 'application/json'
-	}
-});
+const Request = RequestUtil.create('patient');
 
 const PatientService = {
 	getPatients() {
@@ -17,10 +12,13 @@ const PatientService = {
 				params: {
 				apiKey: AccountService.getApiKey()
 				}
-			}).then((response) => {
+			})
+			.then((response) => {
 				patients = response.data;
-			}).finally(() => {
-				StoreService.getPatients().then((stored) => {
+			})
+			.finally(() => {
+			StoreService.getPatients()
+				.then((stored) => {
 					patients = patients.filter((patient) => {
 						const isDuplicated = stored.some((store) => {
 							return store.id === patient.id;
@@ -44,10 +42,12 @@ const PatientService = {
 						params: {
 							apiKey: AccountService.getApiKey()
 						}
-					}).then((response) => {
+					})
+					.then((response) => {
 						success(response.data);
 					})
-					.catch(() => {});
+					.catch(() => {
+					});
 				});
 		});
 	},
@@ -58,18 +58,21 @@ const PatientService = {
 				params: {
 					apiKey: AccountService.getApiKey()
 				}
-			}).then((response) => {
+			})
+			.then((response) => {
 				journals = response.data;
-			}).finally(() => {
-				StoreService.getJournals(patientId).then((stored) => {
-					journals = journals.filter((journal) => {
-						const isDuplicated = stored.some((store) => {
-							return store.id === journal.id;
+			})
+			.finally(() => {
+				StoreService.getJournals(patientId)
+					.then((stored) => {
+						journals = journals.filter((journal) => {
+							const isDuplicated = stored.some((store) => {
+								return store.id === journal.id;
+							});
+							return !isDuplicated;
 						});
-						return !isDuplicated;
-					});
-					const all = stored.concat(journals);
-					success(all);
+						const all = stored.concat(journals);
+						success(all);
 				});
 			});
 		});

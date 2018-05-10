@@ -1,23 +1,20 @@
-import axios from 'axios';
-
-
-const Request = axios.create({
-	baseURL: 'http://localhost/stack2/account',
-	headers: {
-		'Content-Type': 'application/json'
-	}
-});
+import {Request as RequestUtil} from "../util/Request";
+const Request = RequestUtil.create('account');
 
 let apiKey = null;
 const AccountService = {
 	login(username, password) {
 		return new Promise((success, fail) => {
-			Request.post('/login', {username: username, password: password})
+			Request.post('/login', {
+				username: username,
+				password: password
+			})
 				.then((response) => {
 					apiKey = response.data.apiKey;
 					localStorage.setItem('apiKey', apiKey);
 					success();
-			}).catch(() => {
+			})
+			.catch(() => {
 				fail("failed");
 			});
 		});
