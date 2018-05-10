@@ -13,7 +13,6 @@ export class LoginComponent implements OnInit {
 
   public username: string;
   public password: string;
-  public errorMessage: string;
   public connectionStatus: boolean;
 
   constructor(

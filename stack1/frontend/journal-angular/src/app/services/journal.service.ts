@@ -6,6 +6,7 @@ import {AccountService} from './account.service';
 import {LocalDbService} from './localDb.service';
 import {Observable} from 'rxjs/Observable';
 import {PatientModel} from '../models/patient.model';
+import {SyncService} from './sync.service';
 
 
 @Injectable()
@@ -14,7 +15,8 @@ export class JournalService {
 
   constructor(private http: HttpClient,
               private accService: AccountService,
-              private localDbService: LocalDbService) {
+              private localDbService: LocalDbService,
+              private syncService: SyncService) {
   }
 
   public getPatientJournals(patientId: string): Promise<JournalModel[]> {
@@ -33,9 +35,13 @@ export class JournalService {
                 resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
               });
           } else {
-            this.http.get<JournalModel[]>(url).subscribe(data => {
+            this.http.get<JournalModel[]>(url).toPromise()
+              .then(data => {
               resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
-            });
+            })
+              .catch(_ => {
+                this.syncService.onlineStatus.next(false);
+              });
           }
         });
     });
@@ -44,12 +50,14 @@ export class JournalService {
   private convertUnixTimeToJavascriptUnixInArray(journals: JournalModel[]): JournalModel[] {
     journals.forEach(note => {
       note.submittedAt = String(+note.submittedAt * 1000);
+      note.writtenAt = String(+note.writtenAt * 1000);
     });
     return journals;
   }
 
   private convertUnixTimeToJavascriptUnix(journal: JournalModel): JournalModel {
     journal.submittedAt = String(+journal.submittedAt * 1000);
+    journal.writtenAt = String(+journal.writtenAt * 1000);
     return journal;
   }
 
@@ -62,9 +70,13 @@ export class JournalService {
           if (journal) {
             resolve(this.convertUnixTimeToJavascriptUnix(journal));
           } else {
-            this.http.get<JournalModel>(url).subscribe(serverJournal => {
+            this.http.get<JournalModel>(url).toPromise()
+              .then(serverJournal => {
               resolve(this.convertUnixTimeToJavascriptUnix(serverJournal));
-            });
+            })
+              .catch(_ => {
+                this.syncService.onlineStatus.next(false);
+              });
           }
         });
     });
@@ -81,7 +93,7 @@ export class JournalService {
       });
   }
 
-  public newJournalNote(text: string, patientId: string) {
+  public newJournalNote(text: string, patientId: string): Promise<any> {
     const writtenAt = Math.round((new Date()).getTime() / 1000);
     const url = this.SERVER_URL + '/journal';
 
@@ -92,6 +104,16 @@ export class JournalService {
       patientId: patientId
     };
 
-    return this.http.post(url, sendData);
+    return new Promise<any>((resolve, reject) => {
+      this.http.post(url, sendData).toPromise()
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          this.syncService.onlineStatus.next(false);
+          this.localDbService.newJournalNote(text, patientId, writtenAt);
+          resolve();
+        });
+    });
   }
 }

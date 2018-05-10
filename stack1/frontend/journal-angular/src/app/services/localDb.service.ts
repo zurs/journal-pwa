@@ -7,6 +7,9 @@ import {PatientModel} from '../models/patient.model';
 import {Observable} from 'rxjs/Observable';
 import {JournalModel} from '../models/journal.model';
 import {Subject} from 'rxjs/Subject';
+import {SyncService} from './sync.service';
+
+const uuidv4 = require('uuid/v4');
 
 PouchDB.plugin(PouchDBFind);
 
@@ -18,28 +21,26 @@ export class LocalDbService {
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
   public replicationActive = false;
   public whenLocalPatientsChanges = new Subject();
+  public whenLocalJournalsChanges = new Subject();
 
   constructor(private http: HttpClient,
-              private accService: AccountService) {
+              private accService: AccountService,
+              private syncService: SyncService
+  ) {
     this.patientsDb = new PouchDB('patients');
     this.journalsDb = new PouchDB('journals');
-    // this.patientsDb.sync(this.remoteCouchServer + 'rep_test', {live: true});
-    // Start replication
 
+    // Check if there is anything replicated already
+    this.patientsDb.allDocs()
+      .then(result => {
+        if (result.rows.length > 0) {
+          this.startDefaultReplication();
+        }
+      });
   }
 
   public syncPatient(id: string) {
-    // syncDom.setAttribute('data-sync-state', 'syncing');
-
-    if (!this.replicationActive) {
-      const dbNameUrl = this.SERVER_URL + '/account/db?apiKey=' + this.accService.getApiKey();
-      this.http.get(dbNameUrl)
-        .subscribe(response => {
-          this.setupFullReplication(response.db);
-          this.replicationActive = true;
-        });
-    }
-
+    this.startDefaultReplication();
     const url = this.SERVER_URL + '/patient/' + id + '/store';
     this.http.post<any>(url, {
       apiKey: this.accService.getApiKey()
@@ -47,6 +48,13 @@ export class LocalDbService {
   }
 
   public unsyncPatient(id: string) {
+    this.startDefaultReplication();
+    this.http.delete(this.SERVER_URL + '/patient/' + id + '/store?apiKey=' + this.accService.getApiKey()).subscribe(response => {
+    });
+  }
+
+  // The default function for setting up the replication
+  public startDefaultReplication() {
     if (!this.replicationActive) {
       const url = this.SERVER_URL + '/account/db?apiKey=' + this.accService.getApiKey();
       this.http.get(url)
@@ -55,8 +63,6 @@ export class LocalDbService {
           this.replicationActive = true;
         });
     }
-    this.http.delete(this.SERVER_URL + '/patient/' + id + '/store?apiKey=' + this.accService.getApiKey()).subscribe(response => {
-    });
   }
 
   public getPatients(): Promise<PatientModel[]> {
@@ -98,14 +104,19 @@ export class LocalDbService {
 
   public getPatientJournals(patientId: string): Promise<JournalModel[]> {
     return new Promise<JournalModel[]>((resolve, reject) => {
-      this.journalsDb.find({
-        selector: {
-          patientId: patientId
-        },
-        fields: ['_id', 'submittedAt']
-      })
+      this.journalsDb.allDocs({include_docs: true})
         .then(result => {
-          resolve(JournalModel.parseArray(result.docs));
+          result = result.rows.filter(item => {
+            return item.doc.patientId === patientId;
+          });
+          result = result.map(item => {
+            return {
+              id: item.id,
+              writtenAt: item.doc.writtenAt,
+              submittedAt: item.doc.submittedAt
+            };
+          });
+          resolve(result);
         });
     });
   }
@@ -120,6 +131,21 @@ export class LocalDbService {
         .then(result => {
           resolve(JournalModel.parseObject(result.docs[0]));
         });
+    });
+  }
+
+  public newJournalNote(text: string, patientId: string, writtenAt: number): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      const newUUID = uuidv4();
+      this.journalsDb.put({
+        _id: newUUID,
+        text: text,
+        patientId: patientId,
+        writtenAt: writtenAt
+      }).then(response => {
+        this.syncService.addJournalToBeSynced(text, patientId, writtenAt, newUUID);
+        resolve();
+      });
     });
   }
 
@@ -154,7 +180,7 @@ export class LocalDbService {
         });
       // ==================
       // Replicate journals
-      this.setupReplication(this.journalsDb, remoteJournalsDb, ['_id', 'patientId']);
+      this.setupReplication(this.journalsDb, remoteJournalsDb, ['_id', 'patientId'], this.whenLocalJournalsChanges);
       this.replicationActive = true;
     });
   }

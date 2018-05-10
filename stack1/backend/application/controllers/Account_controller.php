@@ -51,4 +51,8 @@ class Account_controller extends CI_Controller{
 	    $this->jsonresponse->Ok(['db' => $this->account->username]);
     }
 
+    public function heartbeat() {
+	    $this->jsonresponse->Ok();
+    }
+
 }
