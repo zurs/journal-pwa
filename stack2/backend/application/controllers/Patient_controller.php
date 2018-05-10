@@ -8,7 +8,7 @@ class Patient_controller extends Authenticated_controller {
         $this->load->model('patient_model');
     }
 
-    public function create(){
+    public function create() {
         $patient = new Patient();
         $patient->name = $this->input->post('name');
         $patient->ssn = $this->input->post('ssn');
