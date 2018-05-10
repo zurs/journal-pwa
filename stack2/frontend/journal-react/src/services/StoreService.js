@@ -4,6 +4,30 @@ import uuid from 'uuid/v4';
 const StoreService = {
 	syncStorage() {
 		console.log("sync storage");
+		this.getPatients().then((patients) => {
+				const promises = patients.map((patient) => {
+					return this.getLocalJournals(patient.id);
+				});
+				return Promise.all(promises);
+			}).then((journals) => {
+				let all = [];
+				journals.forEach((journal) => {
+					all = all.concat(all ,journal);
+				});
+				return Promise.resolve(all);
+			}).then((journals) => {
+				const promises = journals.map((journal) => {
+					return JournalService.createJournal(journal);
+				});
+				return Promise.all(promises);
+			}).then((journals) => {
+			console.log("success!");
+			console.log("pushed: ");
+			console.log(journals);
+			console.log("clearing storage");
+			this.deleteLocalJournals();
+
+		});
 	},
 	getJournals(patientId) {
 		return new Promise((success) => {
@@ -44,19 +68,34 @@ const StoreService = {
 			}
 		});
 	},
-	createLocalJournal(journal) {
-		journal.id = uuid();
-		journal.submittedAt = Date.now();
+	deleteLocalJournals() {
 		return new Promise((success) => {
-			const promise1 = this.getPatient(journal.patientId).then(() => {
-				const storedJournals = localStorage.getItem('patient/'+journal.patientId+'/local/journals');
+			this.getPatients()
+				.then((patients) => {
+					patients.forEach((patient) => {
+						localStorage.removeItem('patient/'+patient.id+'/local/journals');
+					});
+					success();
+				});
+		});
+	},
+	getLocalJournals(patientId) {
+		return new Promise((success) => {
+				const storedJournals = localStorage.getItem('patient/'+patientId+'/local/journals');
 				let journals = [];
 				if(storedJournals !== null) {
 					journals = JSON.parse(storedJournals);
 				}
+				success(journals);
+		});
+	},
+	createLocalJournal(journal) {
+		journal.id = uuid();
+		journal.submittedAt = Date.now();
+		return new Promise((success) => {
+			const promise1 = this.getLocalJournals(journal.patientId).then((journals) => {
 				journals.push(journal);
 				localStorage.setItem('patient/'+journal.patientId+'/local/journals', JSON.stringify(journals));
-
 			});
 			const promise2 = this.createJournal(journal);
 			Promise.all([promise1, promise2]).then(() => {
@@ -120,11 +159,8 @@ const StoreService = {
 				}
 			});
 			const promises = patientIds.map((patientId) => {
-				return this.getPatient(patientId).then((patient) => {
-					return patient;
-				});
+				return this.getPatient(patientId);
 			});
-
 			Promise.all(promises).then((patients) => {
 					success(patients);
 				});

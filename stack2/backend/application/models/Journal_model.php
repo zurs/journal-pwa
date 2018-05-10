@@ -20,7 +20,9 @@ class Journal_model extends CI_Model {
 
         $journal->authorId = $accountId;
         $journal->submittedAt = time() * 1000;
-        $journal->id = Uuid::uuid4();
+        if($journal->id === null) {
+            $journal->id = Uuid::uuid4();
+        }
 
         $query = $this->cassandra_client
             ->insert('journals', (array)$journal);

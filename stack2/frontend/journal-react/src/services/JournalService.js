@@ -31,12 +31,12 @@ const JournalService = {
 						apiKey: AccountService.getApiKey()
 					}
 				}).then((response) => {
-					response.data.text = null;
 					StoreService.getPatient(journal.patientId)
 						.then(() => {
 							 StoreService.createJournal(response.data);
 						})
 						.finally(() => {
+							response.data.text = null;
 							success(response.data);
 						});
 				}).catch(() => {
