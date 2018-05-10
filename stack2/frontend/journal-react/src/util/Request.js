@@ -10,7 +10,6 @@ export class Request {
 			}
 		});
 		instance.interceptors.response.use(null, (error) => {
-			console.log(subscribers);
 			subscribers.forEach((subscriber) => {
 				subscriber();
 			});
