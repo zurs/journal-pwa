@@ -96,3 +96,10 @@ waitingForStuff()
   result.handle();
 });
 ```
+
+Det ska vara line-break för måsvingar, line-break efter den första och line-break innan den sista måsvingen. Alltså:
+```
+let variable = {[line-break]
+  property: 'value' [line-break]
+}
+```
