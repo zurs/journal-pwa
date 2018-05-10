@@ -89,6 +89,15 @@ if($logical_comparison) {
 somethingThatResultsInReturnOrExit();
 ```
 
+### Funktionskejdor
+Funktionskedjor skapas på ny rad
+```
+builder()
+.useConcrete()
+.setHeight(1000)
+.build()
+```
+
 ## Frontend
 arrow-funktioner måste börja på en ny rad på följande sätt:
 ```
