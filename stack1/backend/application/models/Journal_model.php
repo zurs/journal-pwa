@@ -12,7 +12,6 @@ class Journal_model extends CI_Model {
 	
 	function __construct(){
 		parent::__construct();
-		$this->load->library('couch_client');
 	}
 
 	public function create(Journal $journal): ?Journal {

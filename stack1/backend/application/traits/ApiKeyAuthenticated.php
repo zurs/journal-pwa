@@ -9,12 +9,12 @@ trait ApiKeyAuthenticated {
 		$apiKey = $ci->input->post_get('apiKey');
 
 		if($apiKey === '' || !$apiKey){
-			$ci->jsonresponse->Error('API-nyckel saknas', 401);
+			$ci->json_response->Error('API-nyckel saknas', 401);
 		}
 
 		$this->account = $ci->account_model->getByApiKey($apiKey);
 		if($this->account === null){
-			$ci->jsonresponse->Error('Ogiltig nyckel', 401);
+			$ci->json_response->Error('Ogiltig nyckel', 401);
 		}
 	}
 

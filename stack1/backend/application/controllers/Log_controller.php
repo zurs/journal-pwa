@@ -11,7 +11,6 @@ class Log_controller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->authenticateRequest();
-		$this->load->model('log_model');
 	}
 
 	public function sync() {
@@ -27,8 +26,8 @@ class Log_controller extends CI_Controller {
 		}
 
 		if($result) {
-			$this->jsonresponse->Ok();
+			$this->json_response->Ok();
 		}
-		$this->jsonresponse->Error();
+		$this->json_response->Error();
 	}
 }

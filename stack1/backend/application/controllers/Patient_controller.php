@@ -13,12 +13,6 @@ class Patient_controller extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->authenticateRequest();
-
-		$this->load->model('journal_model');
-		$this->load->model('patient_model');
-		$this->load->model('replication_model');
-		$this->load->model('log_model');
-		$this->load->library('couch_client');
 	}
 
 	public function create(){
@@ -29,23 +23,23 @@ class Patient_controller extends CI_Controller {
 		$result = $this->patient_model->create($patient);
 
 		if($result === null){
-			$this->jsonresponse->Error();
+			$this->json_response->Error();
 		}
 
-		$this->jsonresponse->Ok($result);
+		$this->json_response->Ok($result);
 	}
 
 	public function get($id) {
 		$patient = $this->patient_model->getById($id);
 		if($patient === null) {
-			$this->jsonresponse->Error("", 404);
+			$this->json_response->Error("", 404);
 		}
-		$this->jsonresponse->Ok($patient);
+		$this->json_response->Ok($patient);
 	}
 
 	public function getAll() {
 		$patients = $this->patient_model->getAll();
-		$this->jsonresponse->Ok($patients);
+		$this->json_response->Ok($patients);
 	}
 
 	public function getJournals($id) {
@@ -58,7 +52,7 @@ class Patient_controller extends CI_Controller {
 			unset($journal->writtenAt);
 			unset($journal->rev);
 		}
-		$this->jsonresponse->Ok($journals);
+		$this->json_response->Ok($journals);
 	}
 
 	public function create_store($id) {
@@ -66,9 +60,9 @@ class Patient_controller extends CI_Controller {
 		$db = $this->replication_model->create($id, $account->id, $account->username);
 
 		if($db === null) {
-			$this->jsonresponse->Error("could not replicate");
+			$this->json_response->Error("could not replicate");
 		}
-		$this->jsonresponse->Ok(['db' => $account->username]);
+		$this->json_response->Ok(['db' => $account->username]);
 	}
 
 	public function delete_store($id) {
@@ -76,8 +70,8 @@ class Patient_controller extends CI_Controller {
 		$result = $this->replication_model->delete($id, $account->id, $account->username);
 
 		if($result) {
-			$this->jsonresponse->Ok();
+			$this->json_response->Ok();
 		}
-		$this->jsonresponse->Error("Could not delete", 404);
+		$this->json_response->Error("Could not delete", 404);
 	}
 }
