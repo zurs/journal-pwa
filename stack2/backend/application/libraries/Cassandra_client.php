@@ -5,7 +5,6 @@
  * Date: 2018-05-03
  * Time: 10:15
  */
-require_once("application/third_party/Cql_builder.php");
 class Cassandra_client {
 	private $session;
 
