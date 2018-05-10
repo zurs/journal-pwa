@@ -8,7 +8,7 @@ export class JournalModel {
     return dbJournals.map(this.parseObject);
   }
 
-  public static parseObject(dbJournal: JournalModel): JournalModel {
+  public static parseObject(dbJournal): JournalModel {
     if (typeof dbJournal !== 'undefined') {
       dbJournal.id = dbJournal._id;
     }

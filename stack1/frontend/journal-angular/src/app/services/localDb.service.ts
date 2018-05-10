@@ -4,12 +4,10 @@ import PouchDBFind from 'pouchdb-find';
 import {HttpClient} from '@angular/common/http';
 import {AccountService} from './account.service';
 import {PatientModel} from '../models/patient.model';
-import {Observable} from 'rxjs/Observable';
 import {JournalModel} from '../models/journal.model';
 import {Subject} from 'rxjs/Subject';
 import {SyncService} from './sync.service';
-
-const uuidv4 = require('uuid/v4');
+import { UUID } from 'angular2-uuid';
 
 PouchDB.plugin(PouchDBFind);
 
@@ -55,7 +53,7 @@ export class LocalDbService {
   public startDefaultReplication() {
     if (!this.replicationActive) {
       const url = this.SERVER_URL + '/account/db?apiKey=' + this.accService.getApiKey();
-      this.http.get(url)
+      this.http.get<{db}>(url)
         .subscribe(response => {
           this.setupFullReplication(response.db);
           this.replicationActive = true;
@@ -136,7 +134,7 @@ export class LocalDbService {
 
   public newJournalNote(text: string, patientId: string, writtenAt: number): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      const newUUID = uuidv4();
+      const newUUID = UUID.UUID();
       this.journalsDb.put({
         _id: newUUID,
         text: text,

@@ -14,7 +14,7 @@ export class PatientModel {
     this.localyStored = false;
   }
 
-  public static parsePouchObject(someObj: PatientModel): PatientModel {
+  public static parsePouchObject(someObj): PatientModel {
     someObj.id = someObj._id;
     return someObj;
   }
