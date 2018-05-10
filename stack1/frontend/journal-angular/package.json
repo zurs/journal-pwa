@@ -27,6 +27,7 @@
     "pouchdb": "^6.4.3",
     "pouchdb-find": "^6.4.3",
     "rxjs": "^5.5.6",
+    "uuid": "^3.2.1",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {

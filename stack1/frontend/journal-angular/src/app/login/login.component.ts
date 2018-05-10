@@ -13,12 +13,9 @@ export class LoginComponent implements OnInit {
 
   public username: string;
   public password: string;
-  public errorMessage: string;
   public connectionStatus: boolean;
 
-  constructor(
-    private accService: AccountService,
-    private router: Router) { }
+  constructor(private accService: AccountService, private router: Router) { }
 
   ngOnInit() {
     // Check if already logged in
@@ -31,7 +28,8 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.accService.authenticate(this.username, this.password).subscribe(response => {
+    this.accService.authenticate(this.username, this.password)
+      .subscribe(response => {
       if (response.apiKey !== '') {
         this.router.navigate(['home']);
       }

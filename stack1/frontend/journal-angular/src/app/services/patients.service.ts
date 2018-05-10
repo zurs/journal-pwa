@@ -7,6 +7,7 @@ import {PatientModel} from '../models/patient.model';
 import {JournalService} from './journal.service';
 import {LocalDbService} from './localDb.service';
 import {toPromise} from 'rxjs/operator/toPromise';
+import {SyncService} from './sync.service';
 
 
 @Injectable()
@@ -19,7 +20,8 @@ export class PatientsService {
     private http: HttpClient,
     private accService: AccountService,
     private journalService: JournalService,
-    private localDbService: LocalDbService) {
+    private localDbService: LocalDbService,
+    private syncService: SyncService) {
   }
 
   public getPatients(): Promise<PatientModel[]> {
@@ -42,6 +44,7 @@ export class PatientsService {
             });
         })
         .catch(() => {
+          this.syncService.onlineStatus.next(false);
           this.localDbService.getPatients()
             .then(patients => {
               resolve(patients);
@@ -56,17 +59,19 @@ export class PatientsService {
     return new Promise<PatientModel>((resolve, reject) => {
       this.localDbService.getPatient(id)
         .then(localPatient => {
-          this.injectPatientWithJournals(localPatient).then(patient => {
-            resolve(patient);
-          });
+          this.injectPatientWithJournals(localPatient)
+            .then(patient => {
+              resolve(patient);
+            });
         })
         .catch(() => {
           this.http.get<PatientModel>(url)
             .toPromise()
             .then(serverPatient => {
-              this.injectPatientWithJournals(serverPatient).then(patient => {
-                resolve(patient);
-              });
+              this.injectPatientWithJournals(serverPatient)
+                .then(patient => {
+                  resolve(patient);
+                });
             });
         });
     });

@@ -6,8 +6,7 @@ import {AccountService} from './account.service';
 @Injectable()
 export class AuthGuardService implements CanActivate {
 
-  constructor(private accService: AccountService,
-              private router: Router) { }
+  constructor(private accService: AccountService, private router: Router) { }
 
   canActivate(): boolean {
     if (!!this.accService.getApiKey()) {

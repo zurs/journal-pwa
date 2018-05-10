@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, tap} from 'rxjs/operators';
 import {CanActivate} from '@angular/router';
+import {Observable} from 'rxjs/Observable';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -13,8 +14,7 @@ export class AccountService {
 
   private apiKey: string;
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) { }
 
   authenticate(username, password) {
     // Make http with the current credentials

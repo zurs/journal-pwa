@@ -56,7 +56,6 @@ class Patient_controller extends CI_Controller {
 			unset($journal->text);
 			unset($journal->authorId);
 			unset($journal->patientId);
-			unset($journal->writtenAt);
 			unset($journal->rev);
 		}
 		$this->jsonresponse->Ok($journals);

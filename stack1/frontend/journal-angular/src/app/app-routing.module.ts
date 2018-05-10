@@ -10,18 +10,6 @@ const appRoutes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuardService] },
   { path: 'patient/:id', component: PatientComponent, canActivate: [AuthGuardService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
-  /*{ path: 'crisis-center', component: CrisisListComponent },
-  { path: 'hero/:id',      component: HeroDetailComponent },
-  {
-    path: 'heroes',
-    component: HeroListComponent,
-    data: { title: 'Heroes List' }
-  },
-  { path: '',
-    redirectTo: '/heroes',
-    pathMatch: 'full'
-  },
-  { path: '**', component: PageNotFoundComponent }*/
 ];
 
 @NgModule({

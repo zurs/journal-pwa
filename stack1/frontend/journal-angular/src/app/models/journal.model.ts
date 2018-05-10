@@ -2,6 +2,7 @@ export class JournalModel {
   public id: string;
   public text: string;
   public submittedAt: string;
+  public writtenAt: string;
 
   public static parseArray(dbJournals: JournalModel[]): JournalModel[] {
     return dbJournals.map(this.parseObject);
