@@ -7,25 +7,10 @@ class Current_account {
     public $password;
     public $apiKey;
 
-    public function __construct(){
-        $ci = &get_instance();
-        $ci->load->model('account_model');
-        $apiKey = $ci->input->post_get('apiKey');
-
-        if(!$apiKey){
-            $ci->json_response->Error('Ingen API-nyckel skickad');
-        }
-
-        $account = $ci->account_model->getByApiKey($apiKey);
-        if($account){
-            $this->id       = $account->id;
-            $this->username = $account->username;
-            $this->password = $account->password;
-            $this->apiKey   = $account->apiKey;
-        }
-        else {
-            $this->json_response->Error('Autentisiering nekad.');
-        }
+    public function setAccount(Account $account) {
+        $this->id       = $account->id;
+        $this->username = $account->username;
+        $this->password = $account->password;
+        $this->apiKey   = $account->apiKey;
     }
-
 }

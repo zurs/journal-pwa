@@ -309,7 +309,8 @@ switch (ENVIRONMENT)
 // Autoload composer libs
 $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
-
+require APPPATH.'traits/ApiKeyAuthenticated.php';
+require APPPATH.'controllers/Authenticated_controller.php';
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE

@@ -5,7 +5,6 @@ use Ramsey\Uuid\Uuid;
 class Patient_model extends CI_Model {
     public function __construct(){
         parent::__construct();
-        $this->load->model('journal_model');
     }
 
     public function create(Patient $patient){

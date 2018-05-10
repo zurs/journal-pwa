@@ -310,7 +310,8 @@ $autoloader = join(DIRECTORY_SEPARATOR,[__DIR__,'vendor','autoload.php']);
 require $autoloader;
 // Load traits
 require APPPATH.'/traits/Cql_parsable.php';
-
+require APPPATH.'/third_party/Cql_builder.php';
+require APPPATH.'/Authenticated_controller.php';
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE

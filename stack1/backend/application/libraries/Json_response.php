@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Date: 2018-04-25
  * Time: 13:52
  */
-class Jsonresponse
+class Json_response
 {
 	public const CONTENT_TYPE_JSON 		= 'application/json';
 	public const DEFAULT_OK_STATUS 		= 200;

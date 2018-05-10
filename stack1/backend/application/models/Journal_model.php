@@ -6,13 +6,12 @@
  * Time: 11:01
  */
 
-use PHPOnCouch\CouchClient;
+
 class Journal_model extends CI_Model {
 	const DB = 'journals';
 	
 	function __construct(){
 		parent::__construct();
-		$this->load->library('couch_client');
 	}
 
 	public function create(Journal $journal): ?Journal {

@@ -4,10 +4,8 @@ use Ramsey\Uuid\Uuid;
 
 class Journal_model extends CI_Model {
 
-    public function __construct(){
-        $this->load->model('account_model');
-        $this->load->model('patient_model');
-        $this->load->model('log_model');
+    public function __construct() {
+        parent::__construct();
     }
 
     public function create(Journal $journal): ?Journal {

@@ -5,20 +5,11 @@
  * Date: 2018-04-27
  * Time: 13:37
  */
-require_once('application/traits/ApiKeyAuthenticated.php');
 
-class Journal_controller extends CI_Controller {
-	use ApiKeyAuthenticated;
+class Journal_controller extends Authenticated_controller {
 
 	function __construct() {
 		parent::__construct();
-		$this->authenticateRequest();
-
-		$this->load->model('patient_model');
-		$this->load->model('journal_model');
-		$this->load->model('account_model');
-		$this->load->model('log_model');
-		$this->load->model('replication_model');
 	}
 
 	public function create() {
@@ -32,37 +23,37 @@ class Journal_controller extends CI_Controller {
 		$journal->text      = $this->input->post('text');
 
 
-		$journal->authorId = $this->getCurrentAccount()->id;
+		$journal->authorId = $this->current_account->id;
 		$patient = $this->patient_model->getById($journal->patientId);
 
 		if($patient === null) {
-			$this->jsonresponse->Error("patient does not exist");
+			$this->json_response->Error("patient does not exist");
 		}
 
 		$returnJournal = $this->journal_model->create($journal);
 		if($returnJournal === null) {
-			$this->jsonresponse->Error();
+			$this->json_response->Error();
 		}
 		$this->replication_model->createJournal($patient->id, $returnJournal);
-		$this->jsonresponse->Ok($returnJournal);
+		$this->json_response->Ok($returnJournal);
 	}
 
 	public function get($id) {
 		$journal = $this->journal_model->getById($id);
 		if($journal === null) {
-			$this->jsonresponse->Error();
+			$this->json_response->Error();
 		}
 
 		$log = new Log();
 		$log->journalId = $journal->id;
-		$log->readerId 	= $this->getCurrentAccount()->id;
+		$log->readerId 	= $this->current_account->id;
 		$result = $this->log_model->create($log);
 
 		if($result === null) {
-			$this->jsonresponse->Error();
+			$this->json_response->Error();
 		}
 
-		$this->jsonresponse->Ok($journal);
+		$this->json_response->Ok($journal);
 	}
 
 	public function getLogs($id) {
@@ -74,6 +65,6 @@ class Journal_controller extends CI_Controller {
 			$formattedLogs[] = ['id' => $log->id, 'readBy' => $account->username, 'readAt' => $log->readAt];
 		}
 
-		$this->jsonresponse->Ok($formattedLogs);
+		$this->json_response->Ok($formattedLogs);
 	}
 }

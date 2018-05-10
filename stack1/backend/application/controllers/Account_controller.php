@@ -14,7 +14,6 @@ class Account_controller extends CI_Controller{
 
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('account_model');
 	}
 	public function login() {
 		$account = new Account();
@@ -26,11 +25,11 @@ class Account_controller extends CI_Controller{
 			$apiKey = $this->account_model->authenticate($account, $dbAccount);
 
 			if($apiKey !== null) {
-				$this->jsonresponse->Ok(['apiKey' => $apiKey]);
+				$this->json_response->Ok(['apiKey' => $apiKey]);
 			}
 		}
 
-		exit($this->jsonresponse->Error("Wrong Login"));
+		exit($this->json_response->Error("Wrong Login"));
 	}
 
 	public function create() {
@@ -41,9 +40,9 @@ class Account_controller extends CI_Controller{
 		$account = $this->account_model->create($account);
 
 		if($account !== null) {
-			$this->jsonresponse->Ok($account);
+			$this->json_response->Ok($account);
 		}
-		$this->jsonresponse->Error("Could not create");
+		$this->json_response->Error("Could not create");
 	}
 
 	public function getDBName() {

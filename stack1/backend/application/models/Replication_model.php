@@ -9,11 +9,7 @@
 class Replication_model extends CI_Model {
 	const DB = 'replicated_patients';
 	public function __construct() {
-		$this->load->library('couch_client');
-		$this->load->model('patient_model');
-		$this->load->model('journal_model');
-		$this->load->model('account_model');
-		$this->load->model('log_model');
+		parent::__construct();
 	}
 
 	public function create(string $patientId, string $accountId, string $prefix) : bool {
