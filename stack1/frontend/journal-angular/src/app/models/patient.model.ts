@@ -5,14 +5,17 @@ export class PatientModel {
   public name: string;
   public ssn: string;
   public journals: JournalModel[];
+  public localyStored: boolean;
 
   public constructor(id: string, name: string, ssn: string) {
     this.id = id;
     this.name = name;
     this.ssn = ssn;
+    this.localyStored = false;
   }
 
-  public static parseFromJson(patientJson: any): PatientModel {
-    return new PatientModel(patientJson.id, patientJson.name, patientJson.ssn);
+  public static parsePouchObject(someObj: PatientModel): PatientModel {
+    someObj.id = someObj._id;
+    return someObj;
   }
 }

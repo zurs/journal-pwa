@@ -31,7 +31,7 @@ export class AccountService {
     );
   }
 
-  public getApiKey() {
+  public getApiKey(): string {
     if (!this.apiKey) {
       const localApiKey = window.localStorage.getItem('apiKey');
       if (localApiKey) {

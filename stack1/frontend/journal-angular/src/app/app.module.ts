@@ -18,6 +18,7 @@ import {JournalService} from './services/journal.service';
 import {AuthGuardService} from './services/auth-guard.service';
 import localeSv from '@angular/common/locales/sv';
 import {registerLocaleData} from '@angular/common';
+import {LocalDbService} from './services/localDb.service';
 
 registerLocaleData(localeSv);
 
@@ -40,7 +41,8 @@ registerLocaleData(localeSv);
     PatientsService,
     JournalService,
     AuthGuardService,
-    { provide: LOCALE_ID, useValue: 'sv' }
+    { provide: LOCALE_ID, useValue: 'sv' },
+    LocalDbService
   ],
   bootstrap: [AppComponent]
 })

@@ -55,6 +55,7 @@ $route['translate_uri_dashes']  = FALSE;
 
 $route['account/login']['post']  	= 'account_controller/login';
 $route['account']['post']       	= 'account_controller/create';
+$route['account/db']['get']         = 'account_controller/getDBName';
 
 $route['journal']['post'] 				= 'journal_controller/create';
 $route['journal/(:any)']['get']			= 'journal_controller/get/$1';

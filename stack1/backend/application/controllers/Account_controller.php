@@ -6,7 +6,12 @@
  * Time: 10:06
  */
 
+require APPPATH . 'traits/ApiKeyAuthenticated.php';
+
 class Account_controller extends CI_Controller{
+
+    use ApiKeyAuthenticated;
+
 	public function __construct(){
 		parent::__construct();
 		$this->load->model('account_model');
@@ -40,5 +45,10 @@ class Account_controller extends CI_Controller{
 		}
 		$this->jsonresponse->Error("Could not create");
 	}
+
+	public function getDBName() {
+	    $this->authenticateRequest();
+	    $this->jsonresponse->Ok(['db' => $this->account->username]);
+    }
 
 }
