@@ -6,13 +6,10 @@
  * Time: 14:25
  */
 
-class Patient_controller extends CI_Controller {
-
-	use ApiKeyAuthenticated;
+class Patient_controller extends Authenticated_controller {
 
 	function __construct(){
 		parent::__construct();
-		$this->authenticateRequest();
 	}
 
 	public function create(){
@@ -56,18 +53,16 @@ class Patient_controller extends CI_Controller {
 	}
 
 	public function create_store($id) {
-		$account = $this->getCurrentAccount();
-		$db = $this->replication_model->create($id, $account->id, $account->username);
+		$db = $this->replication_model->create($id, $this->current_account->id, $this->current_account->username);
 
 		if($db === null) {
 			$this->json_response->Error("could not replicate");
 		}
-		$this->json_response->Ok(['db' => $account->username]);
+		$this->json_response->Ok(['db' => $this->current_account->username]);
 	}
 
 	public function delete_store($id) {
-		$account = $this->getCurrentAccount();
-		$result = $this->replication_model->delete($id, $account->id, $account->username);
+		$result = $this->replication_model->delete($id, $this->current_account->id, $this->current_account->username);
 
 		if($result) {
 			$this->json_response->Ok();

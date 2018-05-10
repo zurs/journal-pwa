@@ -6,12 +6,10 @@
  * Time: 13:37
  */
 
-class Journal_controller extends CI_Controller {
-	use ApiKeyAuthenticated;
+class Journal_controller extends Authenticated_controller {
 
 	function __construct() {
 		parent::__construct();
-		$this->authenticateRequest();
 	}
 
 	public function create() {
@@ -25,7 +23,7 @@ class Journal_controller extends CI_Controller {
 		$journal->text      = $this->input->post('text');
 
 
-		$journal->authorId = $this->getCurrentAccount()->id;
+		$journal->authorId = $this->current_account->id;
 		$patient = $this->patient_model->getById($journal->patientId);
 
 		if($patient === null) {
@@ -48,7 +46,7 @@ class Journal_controller extends CI_Controller {
 
 		$log = new Log();
 		$log->journalId = $journal->id;
-		$log->readerId 	= $this->getCurrentAccount()->id;
+		$log->readerId 	= $this->current_account->id;
 		$result = $this->log_model->create($log);
 
 		if($result === null) {

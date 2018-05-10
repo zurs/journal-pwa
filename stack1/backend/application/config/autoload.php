@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('json_response', 'couch_client');
+$autoload['libraries'] = array('json_response', 'couch_client', 'current_account');
 
 /*
 | -------------------------------------------------------------------

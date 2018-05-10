@@ -5,12 +5,10 @@
  * Date: 2018-05-09
  * Time: 10:46
  */
-class Log_controller extends CI_Controller {
-	use ApiKeyAuthenticated;
+class Log_controller extends Authenticated_controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->authenticateRequest();
 	}
 
 	public function sync() {
@@ -20,7 +18,7 @@ class Log_controller extends CI_Controller {
 		foreach($postedLogs AS $postedLog) {
 			$log = new Log();
 			$log->journalId = $postedLog->journalId;
-			$log->readerId	= $this->getCurrentAccount()->id;
+			$log->readerId	= $this->current_account->id;
 			$log->readAt	= $postedLog->readAt;
 			$result = $this->log_model->create($log) !== null;
 		}
