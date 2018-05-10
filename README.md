@@ -38,7 +38,14 @@ Composer är också nödvändigt då PHP-on-Couch används hittills och det inst
 
 # Code-style
 För att öka trovärdigheten så används code-stylen under.
+
 ## Backend
+
+### Grundläggande
+* Inga requires eller inladdning av klasser sker utan allting laddas på ett ställe automatiskt.
+* Använd alltid use för namespaces, referea inte till något direkt
+* alla klasser som ärver från något måste implementera sin konstructor med parent anrop
+* Json parsning & auth sker på samma sätt till servern
 
 ### Inkapsling
 Måste ske på samma rad som klass- eller funktionsdefinitionen:
