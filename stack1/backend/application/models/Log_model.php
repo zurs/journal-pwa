@@ -5,7 +5,7 @@
  * Date: 2018-04-30
  * Time: 14:34
  */
-use PHPOnCouch\CouchClient;
+
 
 class Log_model extends CI_Model {
 	const DB = 'logs';

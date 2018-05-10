@@ -6,7 +6,7 @@
  * Time: 11:01
  */
 
-use PHPOnCouch\CouchClient;
+
 class Journal_model extends CI_Model {
 	const DB = 'journals';
 	

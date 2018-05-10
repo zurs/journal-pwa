@@ -5,7 +5,6 @@
  * Date: 2018-04-27
  * Time: 13:37
  */
-require_once('application/traits/ApiKeyAuthenticated.php');
 
 class Journal_controller extends CI_Controller {
 	use ApiKeyAuthenticated;

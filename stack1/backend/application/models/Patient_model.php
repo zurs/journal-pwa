@@ -6,7 +6,6 @@
  * Time: 14:21
  */
 
-use PHPOnCouch\CouchClient;
 
 class Patient_model extends CI_Model {
 

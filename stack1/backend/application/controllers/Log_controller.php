@@ -5,7 +5,6 @@
  * Date: 2018-05-09
  * Time: 10:46
  */
-require_once('application/traits/ApiKeyAuthenticated.php');
 class Log_controller extends CI_Controller {
 	use ApiKeyAuthenticated;
 
