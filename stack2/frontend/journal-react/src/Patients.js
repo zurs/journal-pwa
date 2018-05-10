@@ -3,7 +3,6 @@ import PatientService from './services/PatientService';
 import {Link} from "react-router-dom";
 import AccountService from "./services/AccountService";
 import StoreService from "./services/StoreService";
-import JournalService from "./services/JournalService";
 
 const PatientRows = (props) => {
 	return props.patients.map((patient) => {
