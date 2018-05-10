@@ -28,6 +28,7 @@ export default class Journals extends Component {
 	componentDidMount() {
 		Promise.all([PatientService.getPatient(this.patientId), PatientService.getJournals(this.patientId)])
 			.then((result) => {
+				console.log(result[1]);
 				this.setState({
 					patient: result[0],
 					journals: result[1]

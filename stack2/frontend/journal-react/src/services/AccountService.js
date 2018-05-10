@@ -30,7 +30,7 @@ const AccountService = {
 	},
 	logout() {
 		apiKey = null;
-		localStorage.removeItem('apiKey');
+		localStorage.clear();
 	}
 };
 
