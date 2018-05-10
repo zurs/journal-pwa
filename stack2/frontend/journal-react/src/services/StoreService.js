@@ -32,7 +32,10 @@ const StoreService = {
 			})
 			.then((logs) => {
 				if(logs.length > 0) {
-					return Request.post('/sync', {logs: logs, apiKey: AccountService.getApiKey()});
+					return Request.post('/sync', {
+						logs: logs,
+						apiKey: AccountService.getApiKey()
+					});
 				}
 				return Promise.resolve();
 			})

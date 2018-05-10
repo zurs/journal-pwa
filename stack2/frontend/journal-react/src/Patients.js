@@ -66,7 +66,9 @@ export default class Patients extends Component {
 					}
 					return patient;
 				});
-				this.setState({patients: newPatients});
+				this.setState({
+					patients: newPatients
+				});
 			});
 	}
 

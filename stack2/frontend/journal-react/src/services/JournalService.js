@@ -18,7 +18,9 @@ const JournalService = {
 				.catch(() => {
 					return StoreService.getJournal(journalId)
 						.then((journal) => {
-							StoreService.createLog({journalId: journalId});
+							StoreService.createLog({
+								journalId: journalId
+							});
 							success(journal);
 						})
 						.catch(() => {

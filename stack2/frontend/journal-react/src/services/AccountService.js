@@ -5,7 +5,10 @@ let apiKey = null;
 const AccountService = {
 	login(username, password) {
 		return new Promise((success, fail) => {
-			Request.post('/login', {username: username, password: password})
+			Request.post('/login', {
+				username: username,
+				password: password
+			})
 				.then((response) => {
 					apiKey = response.data.apiKey;
 					localStorage.setItem('apiKey', apiKey);
