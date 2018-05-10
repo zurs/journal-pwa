@@ -1,4 +1,3 @@
-import axios from 'axios';
 import AccountService from "./AccountService";
 import StoreService from "./StoreService";
 import {Request as RequestUtil} from "../util/Request";
@@ -8,20 +7,20 @@ const Request = RequestUtil.create('journal');
 const JournalService = {
 		getJournal(journalId) {
 			return new Promise((success, fail) => {
-				StoreService.getJournal(journalId).then((journal) => {
-						success(journal);
-					}).catch(() => {
-					return Request.get('/' + journalId, {
-						params: {
-							apiKey: AccountService.getApiKey()
-						}
-					});
+				Request.get('/' + journalId, {
+					params: {
+						apiKey: AccountService.getApiKey()
+					}
 				}).then((response) => {
 					success(response.data);
 				}).catch(() => {
-					fail("failed");
+					return StoreService.getJournal(journalId);
+				}).then((journal) => {
+					StoreService.createLog({journalId: journalId, patientId: journal.patientId});
+					success(journal);
+				}).catch(() => {
+					fail();
 				});
-
 			});
 		},
 		createJournal(journal) {

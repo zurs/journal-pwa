@@ -165,6 +165,14 @@ const StoreService = {
 					success(patients);
 				});
 		});
+	},
+	createLog(log) {
+		log.id = uuid();
+		log.readAt = Date.now();
+		return new Promise((success) => {
+			localStorage.setItem('log/' + log.id, JSON.stringify(log));
+			success(log);
+		});
 	}
 };
 
