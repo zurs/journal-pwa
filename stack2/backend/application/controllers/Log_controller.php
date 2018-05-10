@@ -1,6 +1,6 @@
 <?php
 use Ramsey\Uuid\Uuid;
-
+require "Authenticated_controller.php";
 class Log_controller extends Authenticated_controller {
     public function __construct() {
         parent::__construct();

@@ -6,6 +6,7 @@
  * Time: 14:25
  */
 
+require "Authenticated_controller.php";
 class Patient_controller extends Authenticated_controller {
 
 	function __construct(){

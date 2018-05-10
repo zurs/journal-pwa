@@ -5,7 +5,7 @@
  * Date: 2018-04-27
  * Time: 13:37
  */
-
+require "Authenticated_controller.php";
 class Journal_controller extends Authenticated_controller {
 
 	function __construct() {

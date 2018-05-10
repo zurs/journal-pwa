@@ -5,6 +5,7 @@
  * Date: 2018-05-09
  * Time: 10:46
  */
+require "Authenticated_controller.php";
 class Log_controller extends Authenticated_controller {
 
 	public function __construct() {

@@ -1,7 +1,5 @@
 <?php
-
-require_once APPPATH . 'controllers/Authenticated_controller.php';
-
+require "Authenticated_controller.php";
 class Journal_controller extends Authenticated_controller {
 
     function __construct() {
