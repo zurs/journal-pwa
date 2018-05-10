@@ -1,5 +1,5 @@
 <?php
-
+use Ramsey\Uuid\Uuid;
 require_once APPPATH . 'controllers/Authenticated_controller.php';
 
 class Log_controller extends Authenticated_controller {
@@ -14,7 +14,7 @@ class Log_controller extends Authenticated_controller {
        $result = true;
        foreach($logs AS $inputLog) {
            $log = new Log();
-           $log->id = \Ramsey\Uuid\Uuid::uuid4();
+           $log->id = Uuid::uuid4();
            $log->journalId  = $inputLog->journalId;
            $log->readAt     = $inputLog->readAt;
            $log->accountId  = $this->current_account->id;
