@@ -14,9 +14,7 @@ export class AccountService {
 
   private apiKey: string;
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) { }
 
   authenticate(username, password) {
     // Make http with the current credentials

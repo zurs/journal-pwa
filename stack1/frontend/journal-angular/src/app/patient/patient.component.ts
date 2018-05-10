@@ -17,13 +17,7 @@ export class PatientComponent implements OnInit {
   public newNoteBool: boolean;
   public newNoteText: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private patientService: PatientsService,
-    private journalService: JournalService,
-    private changeDetector: ChangeDetectorRef,
-    private localDbService: LocalDbService
-  ) {
+  constructor(private route: ActivatedRoute, private patientService: PatientsService, private journalService: JournalService, private changeDetector: ChangeDetectorRef, private localDbService: LocalDbService) {
   }
 
   ngOnInit() {

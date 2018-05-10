@@ -13,10 +13,7 @@ import {SyncService} from './sync.service';
 export class JournalService {
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
 
-  constructor(private http: HttpClient,
-              private accService: AccountService,
-              private localDbService: LocalDbService,
-              private syncService: SyncService) {
+  constructor(private http: HttpClient, private accService: AccountService, private localDbService: LocalDbService, private syncService: SyncService) {
   }
 
   public getPatientJournals(patientId: string): Promise<JournalModel[]> {
@@ -37,8 +34,8 @@ export class JournalService {
           } else {
             this.http.get<JournalModel[]>(url).toPromise()
               .then(data => {
-              resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
-            })
+                resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
+              })
               .catch(_ => {
                 this.syncService.onlineStatus.next(false);
               });
@@ -73,8 +70,8 @@ export class JournalService {
           } else {
             this.http.get<JournalModel>(url).toPromise()
               .then(serverJournal => {
-              resolve(this.convertUnixTimeToJavascriptUnix(serverJournal));
-            })
+                resolve(this.convertUnixTimeToJavascriptUnix(serverJournal));
+              })
               .catch(_ => {
                 this.syncService.onlineStatus.next(false);
               });
@@ -91,14 +88,12 @@ export class JournalService {
     };
     const body = {
       apiKey: this.accService.getApiKey(),
-      logs: [newLog]
+      logs: [
+        newLog
+      ]
     };
     this.http.post(url, body).toPromise()
-      .then(response => {
-        console.log('Journal log uploaded');
-      })
       .catch(error => {
-        console.log('Could not upload log record');
         this.syncService.addLogToBeSynced(newLog);
       });
   }

@@ -23,10 +23,7 @@ export class LocalDbService {
   public whenLocalPatientsChanges = new Subject();
   public whenLocalJournalsChanges = new Subject();
 
-  constructor(private http: HttpClient,
-              private accService: AccountService,
-              private syncService: SyncService
-  ) {
+  constructor(private http: HttpClient, private accService: AccountService, private syncService: SyncService) {
     this.patientsDb = new PouchDB('patients');
     this.journalsDb = new PouchDB('journals');
 
@@ -44,7 +41,8 @@ export class LocalDbService {
     const url = this.SERVER_URL + '/patient/' + id + '/store';
     this.http.post<any>(url, {
       apiKey: this.accService.getApiKey()
-    }).subscribe();
+    })
+      .subscribe();
   }
 
   public unsyncPatient(id: string) {
@@ -67,7 +65,9 @@ export class LocalDbService {
 
   public getPatients(): Promise<PatientModel[]> {
     return new Promise((resolve, reject) => {
-      this.patientsDb.allDocs({include_docs: true})
+      this.patientsDb.allDocs({
+        include_docs: true
+      })
         .then(data => {
           let returnArray = [];
           if (data.total_rows === 0) {
@@ -142,10 +142,11 @@ export class LocalDbService {
         text: text,
         patientId: patientId,
         writtenAt: writtenAt
-      }).then(response => {
-        this.syncService.addJournalToBeSynced(text, patientId, writtenAt, newUUID);
-        resolve();
-      });
+      })
+        .then(response => {
+          this.syncService.addJournalToBeSynced(text, patientId, writtenAt, newUUID);
+          resolve();
+        });
     });
   }
 
@@ -153,10 +154,15 @@ export class LocalDbService {
     return new Promise<any>((resolve, reject) => {
       localDb.replicate.from(remoteAddress).on('complete', (info) => {
         localDb.createIndex({
-          index: {fields: indexFields}
+          index: {
+            fields: indexFields
+          }
         });
         onChangeObservable.next(null);
-        localDb.sync(remoteAddress, {live: true, retry: true})
+        localDb.sync(remoteAddress, {
+          live: true,
+          retry: true
+        })
           .on('error', (errorMsg) => {
             console.log('Syncing error: ', errorMsg);
           })

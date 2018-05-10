@@ -36,11 +36,12 @@ export class SyncService {
           this.onlineStatus.next(true);
         });
     }, 1000);
-    this.onlineStatus.subscribe(value => {
-      if (value === true) {
-        clearInterval(intervalHandler);
-      }
-    });
+    this.onlineStatus
+      .subscribe(value => {
+        if (value === true) {
+          clearInterval(intervalHandler);
+        }
+      });
   }
 
   public getQueue(queue: string): Array<any> {
@@ -93,8 +94,6 @@ export class SyncService {
   }
 
   private syncSingleJournalQueueItem(item) {
-    console.log('Syncing this item: ');
-    console.log(item);
     this.sendJournalNoteToServer(item.text, item.patientId, item.writtenAt, item.id)
       .then(response => {
         this.removeJournalFromQueue(item.id);
@@ -124,7 +123,8 @@ export class SyncService {
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.http.post(url, sendData).toPromise()
+      this.http.post(url, sendData)
+        .toPromise()
         .then(response => {
           resolve(response);
         })
@@ -148,16 +148,13 @@ export class SyncService {
         apiKey: this.accService.getApiKey(),
         logs: this.getQueue(this.LOGS_QUEUE)
       };
-      console.log('About to sync logs');
-      console.log(body);
-      this.http.post(url, body).toPromise()
+      this.http.post(url, body)
+        .toPromise()
         .then(response => {
-          console.log('Synced logs');
           window.localStorage.removeItem(this.LOGS_QUEUE);
           resolve();
         })
         .catch(error => {
-          console.log('Could not sync logs');
           reject();
         });
     });
