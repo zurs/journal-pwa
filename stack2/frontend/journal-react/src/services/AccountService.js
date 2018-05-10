@@ -10,7 +10,8 @@ const AccountService = {
 					apiKey = response.data.apiKey;
 					localStorage.setItem('apiKey', apiKey);
 					success();
-			}).catch(() => {
+			})
+			.catch(() => {
 				fail("failed");
 			});
 		});

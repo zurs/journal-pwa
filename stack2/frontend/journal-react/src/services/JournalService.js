@@ -11,25 +11,30 @@ const JournalService = {
 					params: {
 						apiKey: AccountService.getApiKey()
 					}
-				}).then((response) => {
+				})
+				.then((response) => {
 					success(response.data);
-				}).catch(() => {
-					return StoreService.getJournal(journalId).then((journal) => {
+				})
+				.catch(() => {
+					return StoreService.getJournal(journalId)
+						.then((journal) => {
 							StoreService.createLog({journalId: journalId});
 							success(journal);
-						}).catch(() => {
-						fail();
-					});
+						})
+						.catch(() => {
+							fail();
+						});
 				});
 			});
 		},
 		createJournal(journal) {
-			return new Promise((success, fail) => {
+			return new Promise((success) => {
 				Request.post('', journal, {
 						params: {
 						apiKey: AccountService.getApiKey()
 					}
-				}).then((response) => {
+				})
+				.then((response) => {
 					StoreService.getPatient(journal.patientId)
 						.then(() => {
 							 StoreService.createJournal(response.data);
@@ -38,7 +43,8 @@ const JournalService = {
 							response.data.text = null;
 							success(response.data);
 						});
-				}).catch(() => {
+				})
+				.catch(() => {
 					StoreService.createLocalJournal(journal)
 						.then((response) => {
 							response.text = null;
