@@ -18,11 +18,11 @@ class Json_response
 
 	}
 
-	public function Ok($data = null, $status = Jsonresponse::DEFAULT_OK_STATUS, $exit = true) {
+	public function Ok($data = null, $status = Json_response::DEFAULT_OK_STATUS, $exit = true) {
 		$this->_createResponse($data, $status, $exit);
 	}
 
-	public function Error(string $message = "", $status = Jsonresponse::DEFAULT_ERROR_STATUS, $exit = true) {
+	public function Error(string $message = "", $status = Json_response::DEFAULT_ERROR_STATUS, $exit = true) {
 		$data = null;
 		if(mb_strlen($message) > 0) {
 			$data = ['error' => $message];
@@ -44,7 +44,7 @@ class Json_response
 		return $json;
 	}
 
-	private function _setHeaders(int $status, string $contentType = Jsonresponse::CONTENT_TYPE_JSON) {
+	private function _setHeaders(int $status, string $contentType = Json_response::CONTENT_TYPE_JSON) {
 		$this->ci->output->set_status_header($status);
 		$this->ci->output->set_content_type($contentType, 'utf8');
 	}
