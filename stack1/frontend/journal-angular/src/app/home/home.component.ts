@@ -20,16 +20,14 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private localDbService: LocalDbService,
     private changeDetector: ChangeDetectorRef
-  ) {
-    this.changeDetector.detach();
-  }
+  ) { }
 
   ngOnInit() {
+    this.changeDetector.detach();
     this.updatePatientList();
     this.localDbService.whenLocalPatientsChanges
       .subscribe(data => {
         this.updatePatientList();
-        console.log('Subject sent change event');
       });
   }
 
@@ -41,7 +39,6 @@ export class HomeComponent implements OnInit {
           this.patients.push(patient);
         });
         this.changeDetector.detectChanges();
-        console.log(this.patients);
       });
   }
 

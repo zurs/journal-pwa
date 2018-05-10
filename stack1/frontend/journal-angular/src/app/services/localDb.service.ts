@@ -64,8 +64,6 @@ export class LocalDbService {
       this.patientsDb.allDocs({include_docs: true})
         .then(data => {
           let returnArray = [];
-          console.log('Local patints db: ');
-          console.log(data);
           if (data.total_rows === 0) {
             returnArray = [];
           } else {
@@ -128,7 +126,6 @@ export class LocalDbService {
   private setupReplication(localDb: PouchDB, remoteAddress: string, indexFields: string[], onChangeObservable: Subject<any> = null): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       localDb.replicate.from(remoteAddress).on('complete', (info) => {
-        console.log('Full replication done from: ' + remoteAddress);
         localDb.createIndex({
           index: {fields: indexFields}
         });

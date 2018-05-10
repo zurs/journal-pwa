@@ -56,13 +56,17 @@ export class PatientsService {
     return new Promise<PatientModel>((resolve, reject) => {
       this.localDbService.getPatient(id)
         .then(localPatient => {
-          resolve(this.injectPatientWithJournals(localPatient));
+          this.injectPatientWithJournals(localPatient).then(patient => {
+            resolve(patient);
+          });
         })
         .catch(() => {
           this.http.get<PatientModel>(url)
             .toPromise()
             .then(serverPatient => {
-              resolve(this.injectPatientWithJournals(serverPatient));
+              this.injectPatientWithJournals(serverPatient).then(patient => {
+                resolve(patient);
+              });
             });
         });
     });

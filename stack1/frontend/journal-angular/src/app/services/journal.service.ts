@@ -28,13 +28,11 @@ export class JournalService {
           });
 
           if (doesExist) {
-            console.log('Getting the journals from local database');
             this.localDbService.getPatientJournals(patientId)
               .then(data => {
                 resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
               });
           } else {
-            console.log('Getting the journals from the server');
             this.http.get<JournalModel[]>(url).subscribe(data => {
               resolve(this.convertUnixTimeToJavascriptUnixInArray(data));
             });
