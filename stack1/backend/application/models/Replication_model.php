@@ -26,6 +26,11 @@ class Replication_model extends CI_Model {
 		$logs  = [];
 		foreach($journals AS $journal) {
 			$l = $this->log_model->getByJournalId($journal->id);
+			$tempLog = new Log();
+			$tempLog->journalId = $journal->id;
+			$tempLog->readerId = $accountId;
+			$tempLog->readAt = date('Y-m-d H:i:s');
+			$this->log_model->create($tempLog);
 			$logs = array_merge($logs, $l);
 		}
 

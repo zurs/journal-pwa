@@ -68,6 +68,7 @@ export class JournalService {
       this.localDbService.getPatientJournal(id)
         .then(journal => {
           if (journal) {
+            this.addJournalLog(journal.id);
             resolve(this.convertUnixTimeToJavascriptUnix(journal));
           } else {
             this.http.get<JournalModel>(url).toPromise()
@@ -80,6 +81,26 @@ export class JournalService {
           }
         });
     });
+  }
+
+  private addJournalLog(journalId: string) {
+    const url = this.SERVER_URL + '/log/sync';
+    const newLog = {
+      journalId: journalId,
+      readAt: Math.round((new Date()).getTime() / 1000)
+    };
+    const body = {
+      apiKey: this.accService.getApiKey(),
+      logs: [newLog]
+    };
+    this.http.post(url, body).toPromise()
+      .then(response => {
+        console.log('Journal log uploaded');
+      })
+      .catch(error => {
+        console.log('Could not upload log record');
+        this.syncService.addLogToBeSynced(newLog);
+      });
   }
 
   public loadJournalText(journalsArray: JournalModel[], journalId: string) {

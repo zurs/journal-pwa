@@ -11,6 +11,9 @@ export class SyncService {
   public onlineStatus: Subject<boolean>;
   private SERVER_URL = 'http://127.0.0.1:80/stack1';
 
+  private JOURNAL_QUEUE = 'journal_queue';
+  private LOGS_QUEUE = 'logs_queue';
+
   constructor(
     private http: HttpClient,
     private accService: AccountService) {
@@ -23,7 +26,7 @@ export class SyncService {
         this.activateHeartbeat();
       }
     });
-    this.initJournalOfflineSync();
+    this.initOfflineSync();
   }
 
   private activateHeartbeat() {
@@ -40,41 +43,42 @@ export class SyncService {
     });
   }
 
-  public getJournalQueue(): Array<any> {
-    let currentQueue = window.localStorage.getItem('journal_queue');
+  public getQueue(queue: string): Array<any> {
+    let currentQueue = window.localStorage.getItem(queue);
     if (currentQueue === null) {
-      window.localStorage.setItem('journal_queue', JSON.stringify([]));
-      currentQueue = window.localStorage.getItem('journal_queue');
+      window.localStorage.setItem(queue, JSON.stringify([]));
+      currentQueue = window.localStorage.getItem(queue);
     }
     return JSON.parse(currentQueue);
   }
 
   public addJournalToBeSynced(text: string, patientId: string, writtenAt: number, id: string) {
-    const currentQueue = this.getJournalQueue();
+    const currentQueue = this.getQueue(this.JOURNAL_QUEUE);
     currentQueue.push({
       id: id,
       patientId: patientId,
       writtenAt: writtenAt,
       text: text
     });
-    console.log('Queue updated with new object');
-    console.log(currentQueue);
-    window.localStorage.setItem('journal_queue', JSON.stringify(currentQueue));
+    window.localStorage.setItem(this.JOURNAL_QUEUE, JSON.stringify(currentQueue));
     return;
   }
 
-  private initJournalOfflineSync() {
+  private initOfflineSync() {
     let previousValue = true;
     this.onlineStatus.subscribe(value => {
       if (value === true && previousValue !== value) {
         this.syncJournalQueue();
+        if (this.getQueue(this.LOGS_QUEUE).length > 0) {
+          this.sendLogQueueToServer();
+        }
       }
       previousValue = value;
     });
   }
 
   private syncJournalQueue() {
-    const queue = this.getJournalQueue();
+    const queue = this.getQueue(this.JOURNAL_QUEUE);
     if (queue.length === 0) {
       return;
     }
@@ -85,23 +89,23 @@ export class SyncService {
       }
     }
     // Start sending recursively
-    this.syncSingleQueueItem(queue[0]);
+    this.syncSingleJournalQueueItem(queue[0]);
   }
 
-  private syncSingleQueueItem(item) {
+  private syncSingleJournalQueueItem(item) {
     console.log('Syncing this item: ');
     console.log(item);
     this.sendJournalNoteToServer(item.text, item.patientId, item.writtenAt, item.id)
       .then(response => {
         this.removeJournalFromQueue(item.id);
         if (typeof item.next !== 'undefined') {
-          this.syncSingleQueueItem(item.next);
+          this.syncSingleJournalQueueItem(item.next);
         }
       });
   }
 
   private removeJournalFromQueue(id: string) {
-    let queue = this.getJournalQueue();
+    let queue = this.getQueue(this.JOURNAL_QUEUE);
     queue = queue.filter((item) => {
       return item.id !== id;
     });
@@ -126,6 +130,34 @@ export class SyncService {
         })
         .catch(error => {
           this.onlineStatus.next(false);
+          reject();
+        });
+    });
+  }
+
+  public addLogToBeSynced(log) {
+    const currentQueue = this.getQueue(this.LOGS_QUEUE);
+    currentQueue.push(log);
+    window.localStorage.setItem(this.LOGS_QUEUE, JSON.stringify(currentQueue));
+  }
+
+  private sendLogQueueToServer(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      const url = this.SERVER_URL + '/log/sync';
+      const body = {
+        apiKey: this.accService.getApiKey(),
+        logs: this.getQueue(this.LOGS_QUEUE)
+      };
+      console.log('About to sync logs');
+      console.log(body);
+      this.http.post(url, body).toPromise()
+        .then(response => {
+          console.log('Synced logs');
+          window.localStorage.removeItem(this.LOGS_QUEUE);
+          resolve();
+        })
+        .catch(error => {
+          console.log('Could not sync logs');
           reject();
         });
     });
