@@ -14,12 +14,12 @@ const JournalService = {
 				}).then((response) => {
 					success(response.data);
 				}).catch(() => {
-					return StoreService.getJournal(journalId);
-				}).then((journal) => {
-					StoreService.createLog({journalId: journalId, patientId: journal.patientId});
-					success(journal);
-				}).catch(() => {
-					fail();
+					return StoreService.getJournal(journalId).then((journal) => {
+							StoreService.createLog({journalId: journalId});
+							success(journal);
+						}).catch(() => {
+						fail();
+					});
 				});
 			});
 		},

@@ -1,6 +1,9 @@
 import PatientService from "./PatientService";
 import JournalService from "./JournalService";
 import uuid from 'uuid/v4';
+import {Request as RequestUtil} from "../util/Request";
+import AccountService from "./AccountService";
+const Request = RequestUtil.create('log');
 const StoreService = {
 	syncStorage() {
 		console.log("sync storage");
@@ -20,13 +23,16 @@ const StoreService = {
 					return JournalService.createJournal(journal);
 				});
 				return Promise.all(promises);
-			}).then((journals) => {
-			console.log("success!");
-			console.log("pushed: ");
-			console.log(journals);
-			console.log("clearing storage");
+			}).then(() => {
 			this.deleteLocalJournals();
-
+			return this.getLogs()
+		}).then((logs) => {
+			if(logs.length > 0) {
+				return Request.post('/sync', {logs: logs, apiKey: AccountService.getApiKey()});
+			}
+			return Promise.resolve();
+		}).then(() => {
+			localStorage.removeItem('logs');
 		});
 	},
 	getJournals(patientId) {
@@ -166,12 +172,24 @@ const StoreService = {
 				});
 		});
 	},
+	getLogs() {
+		return new Promise((success) => {
+			let logs = [];
+			const storedLogs = localStorage.getItem('logs');
+			if(storedLogs !== null) {
+				logs = JSON.parse(storedLogs);
+			}
+			success(logs);
+		});
+	},
 	createLog(log) {
-		log.id = uuid();
 		log.readAt = Date.now();
 		return new Promise((success) => {
-			localStorage.setItem('log/' + log.id, JSON.stringify(log));
-			success(log);
+			this.getLogs().then((logs) => {
+				logs.push(log);
+				localStorage.setItem('logs', JSON.stringify(logs));
+				success(log);
+			});
 		});
 	}
 };
